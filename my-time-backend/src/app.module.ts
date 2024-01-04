@@ -4,9 +4,10 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { MongoModule } from './mongo/mongo.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { EmailModule } from './email/email.module';
 
 @Module({
-  imports: [AuthModule, MongoModule],
+  imports: [AuthModule, MongoModule, EmailModule],
   controllers: [AppController],
   providers: [
     AppService,
