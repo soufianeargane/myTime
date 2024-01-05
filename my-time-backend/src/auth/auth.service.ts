@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './user.schema';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { EmailService } from 'src/email/email.service';
+import { CreatedUserDto } from './dto/create-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +15,7 @@ export class AuthService {
     private readonly emailService: EmailService,
   ) { }
 
-  async create(userDto: any) {
+  async create(userDto: CreatedUserDto) {
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(userDto.password, salt);
     const data = {
@@ -35,13 +37,42 @@ export class AuthService {
   }
 
   async generateToken(user: any) {
-    const token = jwt.sign(
-      { userId: user.id, userEmail: user.email },
-      process.env.SECRET_KEY,
-      {
-        expiresIn: '1h',
-      },
-    );
+    const token = jwt.sign({ user }, process.env.SECRET_KEY, {
+      expiresIn: '1h',
+    });
     return token;
+  }
+
+  async verifyUser(token: string) {
+    const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+    const user = await this.userModel.findById(decodedToken['userId']).exec();
+    user.isVerified = true;
+    await user.save();
+  }
+
+  async login(userDto: LoginUserDto) {
+    const user = await this.getUserByEmail(userDto.email);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    const isPasswordValid = await bcrypt.compare(
+      userDto.password,
+      user.password,
+    );
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid password');
+    }
+    if (!user.isVerified) {
+      throw new UnauthorizedException('User is not verified');
+    }
+
+    const payload = {
+      userId: user._id.toString(), // Convert _id to string
+      email: user.email,
+      role: user.role,
+    };
+
+    const token = await this.generateToken(payload);
+    return { token, payload };
   }
 }
