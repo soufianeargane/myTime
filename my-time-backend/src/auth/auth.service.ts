@@ -13,7 +13,7 @@ export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private readonly emailService: EmailService,
-  ) { }
+  ) {}
 
   async create(userDto: CreatedUserDto) {
     const salt = await bcrypt.genSalt(10);
@@ -30,6 +30,7 @@ export class AuthService {
       createdUser.email,
       verificationToken,
     );
+    return createdUser;
   }
 
   async getUserByEmail(email: string) {
@@ -44,10 +45,15 @@ export class AuthService {
   }
 
   async verifyUser(token: string) {
-    const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-    const user = await this.userModel.findById(decodedToken['userId']).exec();
-    user.isVerified = true;
-    await user.save();
+    try {
+      const decoded: any = jwt.verify(token, process.env.SECRET_KEY);
+      const user = await this.userModel.findById(decoded.user._id);
+      user.isVerified = true;
+      await user.save();
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   async login(userDto: LoginUserDto) {

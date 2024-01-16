@@ -5,9 +5,10 @@ import { AuthModule } from './auth/auth.module';
 import { MongoModule } from './mongo/mongo.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { EmailModule } from './email/email.module';
+import { StoresModule } from './stores/stores.module';
 
 @Module({
-  imports: [AuthModule, MongoModule, EmailModule],
+  imports: [AuthModule, MongoModule, EmailModule, StoresModule],
   controllers: [AppController],
   providers: [
     AppService,
