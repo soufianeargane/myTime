@@ -14,6 +14,7 @@ import { Response } from 'express';
 import { CreatedUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Request } from 'express';
+import { log } from 'console';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -21,6 +22,7 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() createdUserDto: CreatedUserDto) {
+    console.log(createdUserDto);
     const existUser = await this.authService.getUserByEmail(
       createdUserDto.email,
     );

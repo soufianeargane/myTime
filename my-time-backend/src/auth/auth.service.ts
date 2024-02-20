@@ -39,7 +39,8 @@ export class AuthService {
 
   async generateToken(user: any) {
     const token = jwt.sign({ user }, process.env.SECRET_KEY, {
-      expiresIn: '1h',
+      // expire in 24 hours
+      expiresIn: '24h',
     });
     return token;
   }

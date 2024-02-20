@@ -6,6 +6,12 @@ import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
   // dotenv.config();
   const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    origin: 'http://localhost:5000',
+    credentials: true,
+    // allow all http methods
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
