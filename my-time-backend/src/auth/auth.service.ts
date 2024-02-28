@@ -26,9 +26,18 @@ export class AuthService {
     const createdUser = new this.userModel(data);
     await createdUser.save();
     const verificationToken = await this.generateToken(createdUser);
+    const mailOptions = {
+      from: 'your-email@example.com',
+      to: createdUser.email,
+      subject: 'Verify Your Account',
+      text: `Click the following link to verify your account:
+             <a href="http://localhost:5000/verify?token=${verificationToken}">Verify</a>
+      `,
+    };
     await this.emailService.sendVerificationEmail(
       createdUser.email,
       verificationToken,
+      mailOptions,
     );
     return createdUser;
   }

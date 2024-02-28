@@ -7,6 +7,7 @@ export class EmailService {
   async sendVerificationEmail(
     email: string,
     verificationToken: string,
+    mailOptions: any,
   ): Promise<void> {
     const transport = nodemailer.createTransport({
       host: 'sandbox.smtp.mailtrap.io',
@@ -16,13 +17,6 @@ export class EmailService {
         pass: '54f027573a08e9',
       },
     });
-
-    const mailOptions = {
-      from: 'your-email@example.com',
-      to: email,
-      subject: 'Verify Your Account',
-      text: `Click the following link to verify your account: http://example.com/verify/${verificationToken}`,
-    };
 
     await transport.sendMail(mailOptions);
   }
