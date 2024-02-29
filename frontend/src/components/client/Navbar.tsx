@@ -2,6 +2,9 @@ import {
   Navbar,
   NavbarBrand,
   NavbarContent,
+  NavbarMenuToggle,
+  NavbarMenuItem,
+  NavbarMenu,
   // NavbarItem,
   // Link,
   Input,
@@ -15,15 +18,27 @@ import {
 import { SearchIcon } from "../SearchIcon";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import React from "react";
 
 export default function Nav() {
   const user = useSelector((state) => state.user.user);
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   const handleApplyClick = (event) => {
     event.preventDefault();
   };
   return (
-    <Navbar isBordered className="px-4">
+    <Navbar
+      isMenuOpen={isMenuOpen}
+      onMenuOpenChange={setIsMenuOpen}
+      isBordered
+      className="px-4"
+    >
+      <NavbarContent className="sm:hidden" justify="start">
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+        />
+      </NavbarContent>
       <NavbarContent justify="start">
         <NavbarBrand className="">
           <p className="hidden sm:block font-bold text-black">
@@ -33,20 +48,6 @@ export default function Nav() {
       </NavbarContent>
 
       <NavbarContent as="div" className="items-center " justify="end">
-        <Input
-          classNames={{
-            base: "w-[200px] sm:max-w-[12rem] h-10 mr-6",
-            mainWrapper: "h-full",
-            input: "text-small ",
-            inputWrapper:
-              "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
-          }}
-          placeholder="Type to search..."
-          size="sm"
-          startContent={<SearchIcon size={18} />}
-          type="search"
-        />
-
         <Button color="warning">
           <Link to="/client/apply">apply to have a store </Link>
         </Button>

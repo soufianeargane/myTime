@@ -29,7 +29,10 @@ export class StoresController {
     @User() user: any,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    this.storesService.create(createStoreDto, user, file);
+    console.log(createStoreDto);
+    console.log(file);
+
+    await this.storesService.create(createStoreDto, user, file);
     return {
       message: 'Store created successfully',
       success: true,

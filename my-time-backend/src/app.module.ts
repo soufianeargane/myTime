@@ -19,12 +19,6 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     CloudinaryModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: ClassSerializerInterceptor,
-    },
-  ],
+  providers: [AppService],
 })
 export class AppModule {}
