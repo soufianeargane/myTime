@@ -14,9 +14,14 @@ import {
 } from "@nextui-org/react";
 import { SearchIcon } from "../SearchIcon";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 export default function Nav() {
   const user = useSelector((state) => state.user.user);
+
+  const handleApplyClick = (event) => {
+    event.preventDefault();
+  };
   return (
     <Navbar isBordered className="px-4">
       <NavbarContent justify="start">
@@ -41,7 +46,10 @@ export default function Nav() {
           startContent={<SearchIcon size={18} />}
           type="search"
         />
-        <Button color="warning">Apply to Have a Store</Button>
+
+        <Button color="warning">
+          <Link to="/client/apply">apply to have a store </Link>
+        </Button>
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
             <Avatar
@@ -60,11 +68,6 @@ export default function Nav() {
               <p className="font-semibold">{user?.email}</p>
             </DropdownItem>
             <DropdownItem key="settings">My Settings</DropdownItem>
-            <DropdownItem key="team_settings">Team Settings</DropdownItem>
-            <DropdownItem key="analytics">Analytics</DropdownItem>
-            <DropdownItem key="system">System</DropdownItem>
-            <DropdownItem key="configurations">Configurations</DropdownItem>
-            <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
             <DropdownItem key="logout" color="danger">
               Log Out
             </DropdownItem>

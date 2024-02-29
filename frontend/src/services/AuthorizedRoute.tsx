@@ -21,6 +21,8 @@ const AuthorizedRoute = ({ element, requiredRole }) => {
         }
       } else {
         try {
+          console.log("validating token");
+
           const result = await validateToken();
           if (result.user) {
             dispatch(setUser(result.user));

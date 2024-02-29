@@ -3,6 +3,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from "./pages/client/Home";
 import AuthorizedRoute from "./services/AuthorizedRoute";
+import Apply from "./pages/client/Apply";
 
 function App() {
   return (
@@ -16,6 +17,12 @@ function App() {
             path="/client/home"
             element={
               <AuthorizedRoute requiredRole="client" element={<Home />} />
+            }
+          />
+          <Route
+            path="/client/apply"
+            element={
+              <AuthorizedRoute requiredRole="client" element={<Apply />} />
             }
           />
         </Routes>
