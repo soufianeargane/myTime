@@ -43,17 +43,15 @@ export class AuthController {
   ) {
     const result = await this.authService.login(loginUserDto);
     const token = result.token;
-
-    // Set the token as an HTTP-only cookie
-    res.cookie('token', token, { httpOnly: true });
+    res.cookie('token', token, { httpOnly: true, sameSite: 'lax' });
 
     return result;
   }
 
-  @Get('validate')
+  @Get('validate-token')
   async validateToken(@Req() req: Request) {
-    console.log(req.cookies);
-    return true;
+    const result = await this.authService.validateToken(req.cookies.token);
+    return result;
   }
 
   @Post('validate-email')

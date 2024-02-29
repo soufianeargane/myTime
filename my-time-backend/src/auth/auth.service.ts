@@ -91,4 +91,13 @@ export class AuthService {
     const token = await this.generateToken(payload);
     return { token, payload };
   }
+
+  async validateToken(token: string) {
+    try {
+      const decoded: any = jwt.verify(token, process.env.SECRET_KEY);
+      return decoded;
+    } catch (e) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
 }
