@@ -54,9 +54,14 @@ export class StoresController {
     return this.storesService.findAll();
   }
 
+  @Get('getStoreByOwner')
+  async getStoreByOwner(@User() user: any) {
+    return await this.storesService.getStoreByOwner(user);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.storesService.findOne(+id);
+    return this.storesService.getOne(+id);
   }
 
   @Patch(':id')

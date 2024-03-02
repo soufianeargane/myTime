@@ -4,15 +4,47 @@ import { applySchema } from "../../zodSchema/apply";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "../../api/axiosInstance";
+import { notification } from "antd";
 import axios from "axios";
+import Swal from "sweetalert2";
+import SpinnerElement from "../../components/SpinnerElement";
 
 type FormData = z.infer<typeof applySchema>;
 
 // import SpinnerElement from "../../components/SpinnerElement";
 
 export default function Apply() {
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const getStoreByOwner = async () => {
+      setLoading(true);
+      try {
+        const result = await axiosInstance.get("/stores/getStoreByOwner");
+        console.log(result);
+        if (result.data.success === true) {
+          Swal.fire({
+            title: "you can't apply for a store!",
+            text: "you already have an ongoing request!",
+            icon: "error",
+          }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+              window.location.href = "/client/home";
+            }
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getStoreByOwner();
+  }, []);
+
   const {
     register,
     handleSubmit,
@@ -48,6 +80,9 @@ export default function Apply() {
         }
       );
       console.log(result);
+      notification.success({
+        message: "your request was sent successfully, wait for approval",
+      });
     } catch (error) {
       console.log(error);
     }
@@ -57,6 +92,8 @@ export default function Apply() {
       <div>
         <Navbar />
       </div>
+      {loading && <SpinnerElement />}
+
       <div className="w-full h-full flex justify-center items-center">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col p-6 gap-4 flex-wrap">

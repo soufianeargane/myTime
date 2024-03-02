@@ -52,8 +52,26 @@ export class StoresService {
     return `This action returns all stores`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} store`;
+  getOne(id: number) {
+    return `This action retu`;
+  }
+
+  async getStoreByOwner(user: any) {
+    const result = await this.storeModel
+      .findOne({ owner: user.userId, status: { $nin: ['active', 'blocked'] } })
+      .sort({ createdAt: -1 })
+      .exec();
+    if (result) {
+      return {
+        success: true,
+        message: 'Store found',
+        data: result,
+      };
+    }
+    return {
+      success: false,
+      message: 'Store not found',
+    };
   }
 
   update(id: number, updateStoreDto: UpdateStoreDto) {

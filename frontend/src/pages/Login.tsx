@@ -30,6 +30,7 @@ export default function Login() {
       const role = res.data.payload.role;
       if (role == "client") {
         console.log("client");
+        window.location.href = "/client/home";
       }
     } catch (error) {
       console.log(error);
