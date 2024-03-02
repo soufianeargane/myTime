@@ -1,18 +1,19 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
-import { Express } from 'express';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { extname } from 'path';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Store } from './entities/store.entity';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class StoresService {
   constructor(
     private readonly cloudinaryService: CloudinaryService,
     @InjectModel('Store') private readonly storeModel: Model<Store>,
+    private readonly emailService: EmailService,
   ) {}
 
   async create(
@@ -30,6 +31,13 @@ export class StoresService {
       image: url.toString(),
     });
     await store.save();
+    const mailOptions = {
+      from: 'your-email@example.com',
+      to: 'anovicsoso@gmail.com',
+      subject: 'new request to open a store',
+      text: `A new request to open a store has been made by ${user.email}`,
+    };
+    await this.emailService.sendEmail(mailOptions);
   }
   async createImage(file: Express.Multer.File) {
     const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];

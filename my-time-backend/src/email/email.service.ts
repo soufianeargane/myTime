@@ -4,11 +4,7 @@ import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class EmailService {
-  async sendVerificationEmail(
-    email: string,
-    verificationToken: string,
-    mailOptions: any,
-  ): Promise<void> {
+  async sendEmail(mailOptions: any): Promise<void> {
     const transport = nodemailer.createTransport({
       host: 'sandbox.smtp.mailtrap.io',
       port: 2525,

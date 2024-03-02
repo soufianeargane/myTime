@@ -34,11 +34,7 @@ export class AuthService {
              <a href="http://localhost:5000/verify?token=${verificationToken}">Verify</a>
       `,
     };
-    await this.emailService.sendVerificationEmail(
-      createdUser.email,
-      verificationToken,
-      mailOptions,
-    );
+    await this.emailService.sendEmail(mailOptions);
     return createdUser;
   }
 
