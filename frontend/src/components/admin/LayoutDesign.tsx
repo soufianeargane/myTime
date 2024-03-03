@@ -19,7 +19,10 @@ import Menu from "@mui/material/Menu";
 import Drawer from "@mui/material/Drawer";
 
 export default function LayoutDesign({ children }) {
-  const [auth, setAuth] = React.useState(true);
+  React.useEffect(() => {
+    document.title = "My time - Admin";
+  }, []);
+  //   const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [open, setOpen] = React.useState(false);
 
@@ -75,7 +78,7 @@ export default function LayoutDesign({ children }) {
           <Toolbar>
             <IconButton
               onClick={toggleDrawer(true)}
-              size="large"
+              size="small"
               edge="start"
               color="inherit"
               aria-label="menu"
@@ -83,7 +86,7 @@ export default function LayoutDesign({ children }) {
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            <Typography component="div" sx={{ flexGrow: 1 }}>
               Photos
             </Typography>
             <div>

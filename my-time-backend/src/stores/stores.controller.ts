@@ -9,6 +9,7 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { StoresService } from './stores.service';
 import { CreateStoreDto } from './dto/create-store.dto';
@@ -18,10 +19,10 @@ import { RoleGuard } from 'src/guard/role.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('stores')
-@UseGuards(new RoleGuard('client'))
 export class StoresController {
   constructor(private readonly storesService: StoresService) {}
 
+  @UseGuards(new RoleGuard('client'))
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async create(
@@ -49,9 +50,15 @@ export class StoresController {
     return await this.storesService.createImage(file);
   }
 
+  @UseGuards(new RoleGuard('admin'))
   @Get()
-  findAll() {
-    return this.storesService.findAll();
+  findAll(@Query('status') status?: string) {
+    if (status) {
+      return status;
+      // return this.storesService.findAllByStatus(status);
+    } else {
+      return this.storesService.findAll();
+    }
   }
 
   @Get('getStoreByOwner')

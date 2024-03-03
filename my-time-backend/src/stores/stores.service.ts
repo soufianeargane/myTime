@@ -57,7 +57,9 @@ export class StoresService {
   }
 
   findAll() {
-    return `This action returns all stores`;
+    // get all stores from the database
+    const result = this.storeModel.find().exec();
+    return result;
   }
 
   getOne(id: number) {
