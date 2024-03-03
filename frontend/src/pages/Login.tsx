@@ -28,9 +28,15 @@ export default function Login() {
         ...data,
       });
       const role = res.data.payload.role;
-      if (role == "client") {
-        console.log("client");
-        window.location.href = "/client/home";
+      switch (role) {
+        case "admin":
+          window.location.href = "/admin/dashboard";
+          break;
+        case "client":
+          window.location.href = "/client/home";
+          break;
+        default:
+          break;
       }
     } catch (error) {
       console.log(error);

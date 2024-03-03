@@ -7,6 +7,7 @@ import Apply from "./pages/client/Apply";
 
 // admin pages
 import Dashboard from "./pages/admin/Dashboard";
+import Requests from "./pages/admin/Requests";
 
 function App() {
   return (
@@ -30,13 +31,19 @@ function App() {
           />
 
           {/* admin routes */}
-          <Route path="/admin/dashboard" element={<Dashboard />} />
-          {/* <Route
+          {/* <Route path="/admin/requests" element={<Dashboard />} /> */}
+          <Route
             path="/admin/dashboard"
             element={
               <AuthorizedRoute requiredRole="admin" element={<Dashboard />} />
             }
-          /> */}
+          />
+          <Route
+            path="/admin/requests"
+            element={
+              <AuthorizedRoute requiredRole="admin" element={<Requests />} />
+            }
+          />
         </Routes>
       </Router>
     </>

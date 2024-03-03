@@ -57,8 +57,7 @@ export class StoresService {
   }
 
   findAll() {
-    // get all stores from the database
-    const result = this.storeModel.find().exec();
+    const result = this.storeModel.find().populate('owner').exec();
     return result;
   }
 
