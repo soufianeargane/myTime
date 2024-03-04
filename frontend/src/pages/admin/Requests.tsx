@@ -71,13 +71,28 @@ const Requests: React.FC = () => {
   const [isInputActive, setIsInputActive] = useState(false);
   const [isShowPopper, setIsShowPopper] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [stores, setStores] = useState([]);
+
+  const acceptStore = async (store: any) => {
+    try {
+      setIsLoading(true);
+      setLoading(!loading);
+      const res = await axiosInstance.post(`/stores/acceptStore`, {
+        store,
+      });
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     async function fetchStores() {
       try {
         const res = await axiosInstance.get("/stores");
-        console.log(res);
         setStores(res.data);
       } catch (error) {
         console.log(error);
@@ -86,7 +101,7 @@ const Requests: React.FC = () => {
       }
     }
     fetchStores();
-  }, []);
+  }, [loading]);
 
   return (
     <div>
@@ -97,7 +112,7 @@ const Requests: React.FC = () => {
             <div className="mt-4 sm:mt-5 lg:mt-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-base font-medium tracking-wide text-slate-700 line-clamp-1 dark:text-navy-100">
-                  Appointments
+                  Stores Requests
                 </h2>
                 <div className="flex">
                   <div className="flex items-center">
@@ -222,7 +237,9 @@ const Requests: React.FC = () => {
                           STATUS
                         </th>
 
-                        <th className="whitespace-nowrap rounded-tr-lg bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5"></th>
+                        <th className="whitespace-nowrap rounded-tr-lg text-center bg-slate-200 px-4 py-3 font-semibold uppercase text-slate-800 dark:bg-navy-800 dark:text-navy-100 lg:px-5">
+                          ACTION
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -270,66 +287,68 @@ const Requests: React.FC = () => {
                           </td>
 
                           <td className="whitespace-nowrap px-4 py-3 sm:px-5">
-                            <button
-                              onClick={() => setIsShowPopper(!isShowPopper)}
-                              className="btn h-8 w-8 rounded-full p-0 hover:bg-slate-300/20 focus:bg-slate-300/20 active:bg-slate-300/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
-                            >
-                              <svg
-                                xmlns="../www.w3.org/2000/svg.html"
-                                className="h-5 w-5"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
-                                />
-                              </svg>
-                              {isShowPopper && (
-                                <div className="popper-box rounded-md border border-slate-150 bg-white py-1.5 font-inter dark:border-navy-500 dark:bg-navy-700">
-                                  <ul>
-                                    <li>
-                                      <a
-                                        href="#"
-                                        className="flex h-8 items-center px-3 pr-8 font-medium tracking-wide outline-none transition-all hover:bg-slate-100 hover:text-slate-800 focus:bg-slate-100 focus:text-slate-800 dark:hover:bg-navy-600 dark:hover:text-navy-100 dark:focus:bg-navy-600 dark:focus:text-navy-100"
-                                      >
-                                        Action
-                                      </a>
-                                    </li>
-                                    <li>
-                                      <a
-                                        href="#"
-                                        className="flex h-8 items-center px-3 pr-8 font-medium tracking-wide outline-none transition-all hover:bg-slate-100 hover:text-slate-800 focus:bg-slate-100 focus:text-slate-800 dark:hover:bg-navy-600 dark:hover:text-navy-100 dark:focus:bg-navy-600 dark:focus:text-navy-100"
-                                      >
-                                        Another Action
-                                      </a>
-                                    </li>
-                                    <li>
-                                      <a
-                                        href="#"
-                                        className="flex h-8 items-center px-3 pr-8 font-medium tracking-wide outline-none transition-all hover:bg-slate-100 hover:text-slate-800 focus:bg-slate-100 focus:text-slate-800 dark:hover:bg-navy-600 dark:hover:text-navy-100 dark:focus:bg-navy-600 dark:focus:text-navy-100"
-                                      >
-                                        Something else
-                                      </a>
-                                    </li>
-                                  </ul>
-                                  <div className="my-1 h-px bg-slate-150 dark:bg-navy-500"></div>
-                                  <ul>
-                                    <li>
-                                      <a
-                                        href="#"
-                                        className="flex h-8 items-center px-3 pr-8 font-medium tracking-wide outline-none transition-all hover:bg-slate-100 hover:text-slate-800 focus:bg-slate-100 focus:text-slate-800 dark:hover:bg-navy-600 dark:hover:text-navy-100 dark:focus:bg-navy-600 dark:focus:text-navy-100"
-                                      >
-                                        Separated Link
-                                      </a>
-                                    </li>
-                                  </ul>
-                                </div>
+                            <div className="flex items-center justify-center space-x-2">
+                              {/* two buttons, accept and refuse */}
+                              {store.status === "pending" && (
+                                <>
+                                  <button
+                                    onClick={() => acceptStore(store)}
+                                    className="btn h-8 w-8 rounded-full p-0 bg-green-500 hover:bg-green-800 focus:bg-green-800 "
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className="h-4.5 w-4.5"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M5 13l4 4L19 7"
+                                      />
+                                    </svg>
+                                  </button>
+                                  <button className="btn h-8 w-8 rounded-full p-0 bg-red-400 hover:bg-red-600 focus:bg-red-600">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className="h-4.5 w-4.5"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M6 18L18 6M6 6l12 12"
+                                      />
+                                    </svg>
+                                  </button>
+                                </>
                               )}
-                            </button>
+                              {store.status === "active" && (
+                                <>
+                                  <button className="btn h-8 w-8 rounded-full p-0 bg-red-400 hover:bg-red-600 focus:bg-red-600">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className="h-4.5 w-4.5"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M6 18L18 6M6 6l12 12"
+                                      />
+                                    </svg>
+                                  </button>
+                                </>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))}

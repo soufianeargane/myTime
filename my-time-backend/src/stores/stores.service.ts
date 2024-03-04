@@ -7,6 +7,7 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Store } from './entities/store.entity';
 import { EmailService } from 'src/email/email.service';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class StoresService {
@@ -14,6 +15,7 @@ export class StoresService {
     private readonly cloudinaryService: CloudinaryService,
     @InjectModel('Store') private readonly storeModel: Model<Store>,
     private readonly emailService: EmailService,
+    private readonly authService: AuthService,
   ) {}
 
   async create(
@@ -89,5 +91,24 @@ export class StoresService {
 
   remove(id: number) {
     return `This action removes a #${id} store`;
+  }
+
+  async acceptStore(store: any) {
+    try {
+      const result = await this.storeModel
+        .findByIdAndUpdate(store._id, { status: 'active' })
+        .exec();
+      const user = await this.authService.changeRole(store.owner._id, 'owner');
+      const mailOptions = {
+        from: 'myTimesupport@mytime.com',
+        to: store.owner.email,
+        subject: 'Your store has been accepted',
+        text: `Your store ${store.name} has been accepted. You can now start selling your products.`,
+      };
+      await this.emailService.sendEmail(mailOptions);
+      return 'accepted';
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

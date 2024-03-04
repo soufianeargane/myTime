@@ -80,4 +80,11 @@ export class StoresController {
   remove(@Param('id') id: string) {
     return this.storesService.remove(+id);
   }
+
+  @Post('acceptStore')
+  @UseGuards(new RoleGuard('admin'))
+  async acceptStore(@Body() body: any) {
+    console.log(body.store);
+    return await this.storesService.acceptStore(body.store);
+  }
 }

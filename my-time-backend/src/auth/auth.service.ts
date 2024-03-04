@@ -96,4 +96,11 @@ export class AuthService {
       throw new UnauthorizedException('Invalid token');
     }
   }
+
+  async changeRole(userId: string, role: string) {
+    const user = await this.userModel.findById(userId);
+    user.role = role;
+    await user.save();
+    return user;
+  }
 }
