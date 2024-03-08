@@ -23,23 +23,24 @@ export class StoresService {
     user: any,
     file: Express.Multer.File,
   ) {
-    console.log(createStoreDto);
-    console.log(user);
-    console.log(file);
-    const url = await this.createImage(file);
-    const store = new this.storeModel({
-      ...createStoreDto,
-      owner: user.userId,
-      image: url.toString(),
-    });
-    await store.save();
-    const mailOptions = {
-      from: 'your-email@example.com',
-      to: 'anovicsoso@gmail.com',
-      subject: 'new request to open a store',
-      text: `A new request to open a store has been made by ${user.email}`,
-    };
-    await this.emailService.sendEmail(mailOptions);
+    try {
+      const url = await this.createImage(file);
+      const store = new this.storeModel({
+        ...createStoreDto,
+        owner: user.userId,
+        image: url.toString(),
+      });
+      await store.save();
+      const mailOptions = {
+        from: 'your-email@example.com',
+        to: 'anovicsoso@gmail.com',
+        subject: 'new request to open a store',
+        text: `A new request to open a store has been made by ${user.email}`,
+      };
+      await this.emailService.sendEmail(mailOptions);
+    } catch (error) {
+      console.log('error', error);
+    }
   }
   async createImage(file: Express.Multer.File) {
     const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
@@ -67,9 +68,9 @@ export class StoresService {
     return `This action retu`;
   }
 
-  async getStoreByOwner(user: any) {
+  async getStoreByOwner(user: any, status: string) {
     const result = await this.storeModel
-      .findOne({ owner: user.userId, status: { $nin: ['active', 'blocked'] } })
+      .findOne({ owner: user.userId, status: status })
       .sort({ createdAt: -1 })
       .exec();
     if (result) {

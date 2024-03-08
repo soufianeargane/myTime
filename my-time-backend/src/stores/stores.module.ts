@@ -19,6 +19,7 @@ import { AuthModule } from 'src/auth/auth.module';
   ],
   controllers: [StoresController],
   providers: [StoresService],
+  exports: [StoresService],
 })
 export class StoresModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

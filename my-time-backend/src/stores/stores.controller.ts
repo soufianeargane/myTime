@@ -50,7 +50,7 @@ export class StoresController {
     return await this.storesService.createImage(file);
   }
 
-  @UseGuards(new RoleGuard('admin'))
+  // @UseGuards(new RoleGuard('admin'))
   @Get()
   findAll(@Query('status') status?: string) {
     if (status) {
@@ -63,7 +63,7 @@ export class StoresController {
 
   @Get('getStoreByOwner')
   async getStoreByOwner(@User() user: any) {
-    return await this.storesService.getStoreByOwner(user);
+    return await this.storesService.getStoreByOwner(user, 'pending');
   }
 
   @Get(':id')

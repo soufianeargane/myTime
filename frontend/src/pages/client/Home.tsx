@@ -1,8 +1,18 @@
 import Navbar from "../../components/client/Navbar";
 import { Button } from "@nextui-org/react";
 import imageStore from "../../assets/images/store.jpg";
+import { useEffect, useState } from "react";
+import axiosInstance from "../../api/axiosInstance";
 
 export default function Home() {
+  const [stores, setStores] = useState([]);
+  useEffect(() => {
+    async function fetchStores() {
+      const result = await axiosInstance.get("/stores");
+      setStores(result.data);
+    }
+    fetchStores();
+  }, []);
   return (
     <div>
       <div>
@@ -57,95 +67,106 @@ export default function Home() {
           </div>
           <div className="flex flex-col mt-6 gap-6">
             {/* card */}
-            <div className="flex justify-between px-12 items-center">
-              <div>
-                <h3 className="text-lg font-semibold">Title</h3>
-                <p
-                  style={{ color: "#867a6e" }}
-                  className="text-gray-500 text-sm"
+            {stores.map((store: any) => (
+              <>
+                <div
+                  key={store._id}
+                  className="flex justify-between px-12 items-center"
                 >
-                  Location
-                </p>
-                <div className="mt-2">
-                  <Button
-                    className="font-semibold px-4 py-2 space-x-2 tracking-widest"
-                    radius="full"
-                    color="default"
-                  >
-                    Visit Store
-                  </Button>
+                  <div>
+                    <h3 className="text-lg font-semibold">Title</h3>
+                    <p
+                      style={{ color: "#867a6e" }}
+                      className="text-gray-500 text-sm"
+                    >
+                      Location
+                    </p>
+                    <div className="mt-2">
+                      <Button
+                        className="font-semibold px-4 py-2 space-x-2 tracking-widest"
+                        radius="full"
+                        color="default"
+                      >
+                        Visit Store
+                      </Button>
+                    </div>
+                  </div>
+                  <div>
+                    <img
+                      src={imageStore}
+                      alt="Picture of the author"
+                      width={200}
+                      height={150}
+                      style={{ borderRadius: "10px" }}
+                    />
+                  </div>
                 </div>
-              </div>
-              <div>
-                <img
-                  src={imageStore}
-                  alt="Picture of the author"
-                  width={200}
-                  height={150}
-                  style={{ borderRadius: "10px" }}
-                />
-              </div>
-            </div>
-            {/* card */}
-            <div className="flex justify-between px-12 items-center">
-              <div>
-                <h3 className="text-lg font-semibold">Title</h3>
-                <p
-                  style={{ color: "#867a6e" }}
-                  className="text-gray-500 text-sm"
+                <div
+                  key={store._id}
+                  className="flex justify-between px-12 items-center"
                 >
-                  Location
-                </p>
-                <div className="mt-2">
-                  <Button
-                    className="font-semibold px-4 py-2 space-x-2 tracking-widest"
-                    radius="full"
-                    color="default"
-                  >
-                    Visit Store
-                  </Button>
+                  <div>
+                    <h3 className="text-lg font-semibold">Title</h3>
+                    <p
+                      style={{ color: "#867a6e" }}
+                      className="text-gray-500 text-sm"
+                    >
+                      Location
+                    </p>
+                    <div className="mt-2">
+                      <Button
+                        className="font-semibold px-4 py-2 space-x-2 tracking-widest"
+                        radius="full"
+                        color="default"
+                      >
+                        Visit Store
+                      </Button>
+                    </div>
+                  </div>
+                  <div>
+                    <img
+                      src={imageStore}
+                      alt="Picture of the author"
+                      width={200}
+                      height={150}
+                      style={{ borderRadius: "10px" }}
+                    />
+                  </div>
                 </div>
-              </div>
-              <div>
-                <img
-                  src={imageStore}
-                  alt="Picture of the author"
-                  width={200}
-                  height={150}
-                  style={{ borderRadius: "10px" }}
-                />
-              </div>
-            </div>
-            {/* card */}
-            <div className="flex justify-between px-12 items-center">
-              <div>
-                <h3 className="text-lg font-semibold">Title</h3>
-                <p
-                  style={{ color: "#867a6e" }}
-                  className="text-gray-500 text-sm"
+                <div
+                  key={store._id}
+                  className="flex justify-between px-12 items-center"
                 >
-                  Location
-                </p>
-                <div className="mt-2">
-                  <Button
-                    className="font-semibold px-4 py-2 space-x-2 tracking-widest"
-                    radius="full"
-                    color="default"
-                  >
-                    Visit Store
-                  </Button>
+                  <div>
+                    <h3 className="text-lg font-semibold">Title</h3>
+                    <p
+                      style={{ color: "#867a6e" }}
+                      className="text-gray-500 text-sm"
+                    >
+                      Location
+                    </p>
+                    <div className="mt-2">
+                      <Button
+                        className="font-semibold px-4 py-2 space-x-2 tracking-widest"
+                        radius="full"
+                        color="default"
+                      >
+                        Visit Store
+                      </Button>
+                    </div>
+                  </div>
+                  <div>
+                    <img
+                      src={imageStore}
+                      alt="Picture of the author"
+                      width={200}
+                      height={150}
+                      style={{ borderRadius: "10px" }}
+                    />
+                  </div>
                 </div>
-              </div>
-              <div>
-                <img
-                  src={imageStore}
-                  alt="Picture of the author"
-                  width={200}
-                  height={150}
-                  style={{ borderRadius: "10px" }}
-                />
-              </div>
-            </div>
+              </>
+            ))}
           </div>
         </div>
       </div>

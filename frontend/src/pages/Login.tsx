@@ -35,11 +35,15 @@ export default function Login() {
         case "client":
           window.location.href = "/client/home";
           break;
+        case "owner":
+          window.location.href = "/owner/dash";
+          break;
         default:
           break;
       }
     } catch (error) {
       console.log(error);
+      alert("server error");
     } finally {
       setIsLoading(false);
     }

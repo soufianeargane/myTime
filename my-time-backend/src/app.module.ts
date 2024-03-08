@@ -8,6 +8,8 @@ import { EmailModule } from './email/email.module';
 import { StoresModule } from './stores/stores.module';
 import { S3Module } from './s3/s3.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { ProductsModule } from './products/products.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     StoresModule,
     S3Module,
     CloudinaryModule,
+    ProductsModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

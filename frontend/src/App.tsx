@@ -9,6 +9,10 @@ import Apply from "./pages/client/Apply";
 import Dashboard from "./pages/admin/Dashboard";
 import Requests from "./pages/admin/Requests";
 
+// owner pages
+import OwDashboard from "./pages/owner/OwDashboard";
+import OwProducts from "./pages/owner/OwProducts";
+
 function App() {
   return (
     <>
@@ -17,6 +21,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           {/* <Route path="/client/home" element={<Home />} /> */}
+          {/* <Route path="/owner/dash" element={<OwDashboard />} /> */}
           <Route
             path="/client/home"
             element={
@@ -42,6 +47,20 @@ function App() {
             path="/admin/requests"
             element={
               <AuthorizedRoute requiredRole="admin" element={<Requests />} />
+            }
+          />
+
+          {/* owner routes */}
+          <Route
+            path="/owner/dash"
+            element={
+              <AuthorizedRoute requiredRole="owner" element={<OwDashboard />} />
+            }
+          />
+          <Route
+            path="/owner/products"
+            element={
+              <AuthorizedRoute requiredRole="owner" element={<OwProducts />} />
             }
           />
         </Routes>
