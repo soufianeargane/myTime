@@ -57,4 +57,9 @@ export class ProductsController {
   remove(@Param('id') id: string) {
     return this.productsService.remove(id);
   }
+
+  @Get('store/:id')
+  getProductsByStore(@Param('id') id: string) {
+    return this.productsService.getProductsByStore(id);
+  }
 }

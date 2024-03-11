@@ -112,4 +112,12 @@ export class StoresService {
       console.log(error);
     }
   }
+
+  // search by name
+  async searchByName(name: string) {
+    const result = await this.storeModel
+      .find({ name: { $regex: name, $options: 'i' } })
+      .exec();
+    return result;
+  }
 }

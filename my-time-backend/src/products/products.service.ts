@@ -72,4 +72,17 @@ export class ProductsService {
     await product.save();
     return { message: 'Product deleted successfully', success: true };
   }
+
+  async getProductsByStore(storeId: string) {
+    const products = await this.productModel
+      .find({
+        store: storeId,
+        deletedAt: null,
+      })
+      .populate('category')
+      .exec();
+
+    console.log(products.length);
+    return products;
+  }
 }

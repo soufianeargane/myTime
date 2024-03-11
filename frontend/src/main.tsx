@@ -10,12 +10,28 @@ import "@fontsource/roboto/700.css";
 import { NextUIProvider } from "@nextui-org/react";
 import "./index.css";
 
+import { createTheme } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#f44336",
+    },
+    secondary: {
+      main: "#3f51b5",
+    },
+  },
+});
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   // <React.StrictMode>
   <Provider store={store}>
-    <NextUIProvider>
-      <App />
-    </NextUIProvider>
+    <ThemeProvider theme={theme}>
+      <NextUIProvider>
+        <App />
+      </NextUIProvider>
+    </ThemeProvider>
   </Provider>
   // </React.StrictMode>
 );

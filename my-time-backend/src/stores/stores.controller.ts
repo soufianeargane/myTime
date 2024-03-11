@@ -87,4 +87,10 @@ export class StoresController {
     console.log(body.store);
     return await this.storesService.acceptStore(body.store);
   }
+
+  @Get('search')
+  search(@Query('q') q: string) {
+    console.log(q);
+    return this.storesService.searchByName(q);
+  }
 }

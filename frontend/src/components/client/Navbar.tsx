@@ -3,11 +3,6 @@ import {
   NavbarBrand,
   NavbarContent,
   NavbarMenuToggle,
-  NavbarMenuItem,
-  NavbarMenu,
-  // NavbarItem,
-  // Link,
-  Input,
   DropdownItem,
   DropdownTrigger,
   Dropdown,
@@ -15,14 +10,22 @@ import {
   Avatar,
   Button,
 } from "@nextui-org/react";
-import { SearchIcon } from "../SearchIcon";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import Cart from "./Cart";
 
 export default function Nav() {
+  const location = useLocation();
+
+  useEffect(() => {
+    setShowCard(location.pathname.includes("store"));
+  }, [location.pathname]);
+
   const user = useSelector((state) => state.user.user);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [showCard, setShowCard] = React.useState(false);
+  const [cartOpen, setCartOpen] = React.useState(false);
 
   const handleApplyClick = (event) => {
     event.preventDefault();
@@ -34,6 +37,7 @@ export default function Nav() {
       isBordered
       className="px-4"
     >
+      {/* <Cart /> */}
       <NavbarContent className="sm:hidden" justify="start">
         <NavbarMenuToggle
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -41,9 +45,11 @@ export default function Nav() {
       </NavbarContent>
       <NavbarContent justify="start">
         <NavbarBrand className="">
-          <p className="hidden sm:block font-bold text-black">
-            Books on Campus
-          </p>
+          <Link to="/client/home">
+            <p className="hidden sm:block font-bold text-black">
+              Books on Campus
+            </p>
+          </Link>
         </NavbarBrand>
       </NavbarContent>
 
@@ -51,6 +57,28 @@ export default function Nav() {
         <Button color="warning">
           <Link to="/client/apply">apply to have a store </Link>
         </Button>
+        {showCard && (
+          <Dropdown placement="bottom-end">
+            <DropdownTrigger
+              onClick={() => {
+                setCartOpen(!cartOpen);
+                console.log("clickedsss");
+              }}
+            >
+              {/* this is to display the CART */}
+              <Avatar
+                isBordered
+                as="button"
+                className="transition-transform"
+                color="secondary"
+                name="Jason Hughes"
+                size="sm"
+                src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+              />
+            </DropdownTrigger>
+            <div></div>
+          </Dropdown>
+        )}
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
             <Avatar
@@ -75,6 +103,7 @@ export default function Nav() {
           </DropdownMenu>
         </Dropdown>
       </NavbarContent>
+      <Cart isOpen={cartOpen} setCartOpen={setCartOpen} />
     </Navbar>
   );
 }

@@ -1,10 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
-import Home from "./pages/client/Home";
 import AuthorizedRoute from "./services/AuthorizedRoute";
-import Apply from "./pages/client/Apply";
 
+// client pages
+import Home from "./pages/client/Home";
+import Apply from "./pages/client/Apply";
+import Products from "./pages/client/Products";
 // admin pages
 import Dashboard from "./pages/admin/Dashboard";
 import Requests from "./pages/admin/Requests";
@@ -20,8 +22,6 @@ function App() {
         <Routes>
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          {/* <Route path="/client/home" element={<Home />} /> */}
-          {/* <Route path="/owner/dash" element={<OwDashboard />} /> */}
           <Route
             path="/client/home"
             element={
@@ -32,6 +32,12 @@ function App() {
             path="/client/apply"
             element={
               <AuthorizedRoute requiredRole="client" element={<Apply />} />
+            }
+          />
+          <Route
+            path="/store/:id"
+            element={
+              <AuthorizedRoute requiredRole="client" element={<Products />} />
             }
           />
 

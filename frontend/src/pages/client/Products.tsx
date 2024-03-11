@@ -1,28 +1,30 @@
-import Navbar from "../../components/client/Navbar";
-import { Button } from "@nextui-org/react";
-import imageStore from "../../assets/images/store.jpg";
+import { useParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axiosInstance from "../../api/axiosInstance";
 import SpinnerElement from "../../components/SpinnerElement";
-import { Link } from "react-router-dom";
+import Navbar from "../../components/client/Navbar";
+import { Button } from "@nextui-org/react";
+import ProductCard from "../../components/client/ProductCard";
 
-export default function Home() {
-  const [stores, setStores] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+export default function Products() {
+  const { id } = useParams();
+
+  const [products, setProducts] = useState([]);
   useEffect(() => {
-    async function fetchStores() {
+    const fetchProducts = async () => {
+      setIsLoading(true);
       try {
-        setIsLoading(true);
-        const response = await axiosInstance.get("/stores");
-        setStores(response.data);
+        const response = await axiosInstance.get(`products/store/${id}`);
+        setProducts(response.data);
       } catch (error) {
-        alert("An error occurred");
-      } finally {
-        setIsLoading(false);
+        console.log(error);
       }
-    }
-    fetchStores();
-  }, []);
+      setIsLoading(false);
+    };
+    fetchProducts();
+  }, [id]);
+
+  const [isLoading, setIsLoading] = useState(false);
   return (
     <div>
       {isLoading && <SpinnerElement />}
@@ -77,45 +79,16 @@ export default function Home() {
         <div className="w-3/4 p-4">
           <div>
             <p className="font-extrabold text-3xl font-serif text-black">
-              Find a school supply store near you
+              Here are the products of the store
             </p>
           </div>
-          <div className="flex flex-col mt-6 gap-6">
-            {/* card */}
-            {stores.map((store: any) => (
+          <div className="flex mt-6 flex-wrap">
+            {products.map((product) => (
               <div
-                key={store._id}
-                className="flex justify-between px-12 items-center"
+                key={product._id}
+                className="sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 p-2"
               >
-                <div>
-                  <h3 className="text-lg font-semibold">{store.name}</h3>
-                  <p
-                    style={{ color: "#867a6e" }}
-                    className="text-gray-500 text-sm"
-                  >
-                    {store.address}
-                  </p>
-                  <div className="mt-2">
-                    <Link to={`/store/${store._id}`}>
-                      <Button
-                        className="font-semibold px-4 py-2 space-x-2 tracking-widest"
-                        radius="full"
-                        color="default"
-                      >
-                        Visit Store
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-                <div>
-                  <img
-                    src={store.image || imageStore}
-                    alt="Picture of the author"
-                    width={200}
-                    height={150}
-                    style={{ borderRadius: "10px" }}
-                  />
-                </div>
+                <ProductCard product={product} storeid={id} />
               </div>
             ))}
           </div>
