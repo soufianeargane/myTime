@@ -1,7 +1,10 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { updateCartItemQuantity } from "../../store/cartSlice";
+import {
+  updateCartItemQuantity,
+  removeItemFromCart,
+} from "../../store/cartSlice";
 
 function Cart({ isOpen, setCartOpen }) {
   const location = useLocation();
@@ -25,11 +28,39 @@ function Cart({ isOpen, setCartOpen }) {
 
   const addQuantity = (item) => {
     const updatedQuantity = item.orderQuantity + 1; // Increase quantity by 1
+    if (updatedQuantity > item.quantity) {
+      alert("You can't add more than available quantity");
+      return;
+    }
     dispatch(
       updateCartItemQuantity({
         storeId: identifier,
         productId: item._id,
         quantity: updatedQuantity,
+      })
+    );
+  };
+
+  const reduceQuantity = (item) => {
+    const updatedQuantity = item.orderQuantity - 1; // Decrease quantity by 1
+    if (updatedQuantity < 1) {
+      alert("You can't reduce quantity less than 1");
+      return;
+    }
+    dispatch(
+      updateCartItemQuantity({
+        storeId: identifier,
+        productId: item._id,
+        quantity: updatedQuantity,
+      })
+    );
+  };
+
+  const removeItem = (item) => {
+    dispatch(
+      removeItemFromCart({
+        storeId: identifier,
+        productId: item._id,
       })
     );
   };
@@ -136,16 +167,28 @@ function Cart({ isOpen, setCartOpen }) {
                                 }}
                                 className=" text-gray-600 border border-gray-500 flex justify-center items-center hover:bg-red-500 hover:cursor-pointer hover:text-white hover:border-black"
                                 onClick={() => {
-                                  // reduceQuantity(item);
+                                  reduceQuantity(item);
                                   console.log("reduce");
                                 }}
                               >
                                 -
                               </div>
+                              <div
+                                style={{
+                                  width: "30px",
+                                  height: "30px",
+                                  marginLeft: "10px",
+                                }}
+                                title="available quantity"
+                                className=" text-gray-600 border border-gray-500 flex justify-center items-center bg-green-400  hover:bg-green-500 hover:cursor-pointer hover:text-white hover:border-black"
+                              >
+                                {item.quantity}
+                              </div>
                             </div>
 
                             <div className="flex">
                               <button
+                                onClick={() => removeItem(item)}
                                 type="button"
                                 className="font-medium text-indigo-600 hover:text-indigo-500"
                               >

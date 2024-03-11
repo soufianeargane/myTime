@@ -33,9 +33,19 @@ export const cartSlice = createSlice({
                 }
             }
         },
+        removeItemFromCart: (state, action) => {
+            const { storeId, productId } = action.payload;
+            if (state.hasOwnProperty(storeId)) {
+                state[storeId] = state[storeId].filter(
+                    (item) => item._id !== productId
+                );
+                // Save updated state to local storage
+                localStorage.setItem('reduxCartState', JSON.stringify(state));
+            }
+        },
     },
 });
 
-export const { addToCart, updateCartItemQuantity } = cartSlice.actions;
+export const { addToCart, updateCartItemQuantity, removeItemFromCart } = cartSlice.actions;
 
 export default cartSlice.reducer;
