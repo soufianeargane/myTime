@@ -118,6 +118,10 @@ function Cart({
     try {
       setLoading(true);
       const result = await axiosInstance.post("/orders", order);
+      // clear localsorage and state
+      localStorage.removeItem("reduxCartState");
+      // reload page
+      window.location.reload();
       console.log(result);
     } catch (error) {
       console.log(error);

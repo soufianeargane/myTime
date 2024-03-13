@@ -24,6 +24,10 @@ export class Order extends Document {
   @Prop({ required: true })
   totalAmount: number;
 
+  // status can be 'pending', 'accepted', 'cancelled'
+  @Prop({ default: 'pending' })
+  status: string;
+
   @Prop({ default: Date.now })
   createdAt: Date;
 

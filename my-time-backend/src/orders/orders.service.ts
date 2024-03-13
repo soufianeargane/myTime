@@ -5,12 +5,14 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Order } from './entities/order.entity';
 import { ProductsService } from '../products/products.service';
+import { StoresService } from 'src/stores/stores.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectModel('Order') private readonly orderModel: Model<Order>,
     private readonly productsService: ProductsService,
+    private readonly storeService: StoresService,
   ) {}
   async create(createOrderDto: CreateOrderDto, user: any) {
     const items = createOrderDto.items;
@@ -29,18 +31,38 @@ export class OrdersService {
       client: user.userId,
       totalAmount,
       store: createOrderDto.storeId,
+      products: items,
     });
-    console.log('order', order);
 
     await order.save();
+    await this.decreaceQuantity(items);
+    console.log('order', order);
     return {
       message: 'Order created successfully',
       success: true,
     };
   }
 
-  findAll() {
-    return `This action returns all orders`;
+  async findAll(user: any) {
+    const store = await this.storeService.getStoreByOwner(user, 'active');
+    console.log('store', store);
+
+    if (!store.success) {
+      throw new BadRequestException('You do not have any active store');
+    }
+
+    const orders = await this.orderModel
+      .find({ store: store.data._id })
+      .populate('client')
+      .populate({
+        path: 'products._id', // Path to the nested product document
+        model: 'Product', // Model name of the product
+      })
+      .exec();
+
+    console.log('store', store);
+
+    return orders;
   }
 
   findOne(id: number) {
@@ -78,5 +100,13 @@ export class OrdersService {
     }
 
     return totalAmount;
+  }
+
+  async decreaceQuantity(items: OrderItemDto[]) {
+    for (const item of items) {
+      const product = await this.productsService.findOne(item._id);
+      product.quantity -= item.orderQuantity;
+      await product.save();
+    }
   }
 }
