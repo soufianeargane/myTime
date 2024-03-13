@@ -6,27 +6,65 @@ import {
   removeItemFromCart,
 } from "../../store/cartSlice";
 
-function Cart({ isOpen, setCartOpen }) {
+import axiosInstance from "../../api/axiosInstance";
+import SpinnerElement from "../SpinnerElement";
+
+interface CartItem {
+  _id: string;
+  name: string;
+  price: number;
+  image: string;
+  category: {
+    name: string;
+  };
+  orderQuantity: number;
+  quantity: number;
+}
+
+interface RootState {
+  cart: {
+    [storeId: string]: CartItem[];
+  };
+}
+
+function Cart({
+  isOpen,
+  setCartOpen,
+}: {
+  isOpen: boolean;
+  setCartOpen: (isOpen: boolean) => void;
+}) {
   const location = useLocation();
   const url = location.pathname;
   const parts = url.split("/");
   const identifier = parts[2];
-  const cart = useSelector((state) => state.cart);
-  const [cartData, setCartData] = useState([]);
+  const cart = useSelector((state: RootState) => state.cart);
+  const [cartData, setCartData] = useState<CartItem[]>([]);
   const dispatch = useDispatch();
+  const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (identifier) {
       console.log(cart[identifier]);
-      setCartData(cart[identifier]); // Set cart data when identifier is present
+      setCartData(cart[identifier] || []); // Set cart data when identifier is present
     }
   }, [identifier, cart]);
+
+  useEffect(() => {
+    // Calculate total price whenever cartData changes
+    let total = 0;
+    cartData.forEach((item) => {
+      total += item.price * item.orderQuantity;
+    });
+    setTotalPrice(total);
+  }, [cartData]);
 
   const toggleCart = () => {
     setCartOpen(!isOpen);
   };
 
-  const addQuantity = (item) => {
+  const addQuantity = (item: CartItem) => {
     const updatedQuantity = item.orderQuantity + 1; // Increase quantity by 1
     if (updatedQuantity > item.quantity) {
       alert("You can't add more than available quantity");
@@ -41,7 +79,7 @@ function Cart({ isOpen, setCartOpen }) {
     );
   };
 
-  const reduceQuantity = (item) => {
+  const reduceQuantity = (item: CartItem) => {
     const updatedQuantity = item.orderQuantity - 1; // Decrease quantity by 1
     if (updatedQuantity < 1) {
       alert("You can't reduce quantity less than 1");
@@ -56,7 +94,7 @@ function Cart({ isOpen, setCartOpen }) {
     );
   };
 
-  const removeItem = (item) => {
+  const removeItem = (item: CartItem) => {
     dispatch(
       removeItemFromCart({
         storeId: identifier,
@@ -64,6 +102,31 @@ function Cart({ isOpen, setCartOpen }) {
       })
     );
   };
+
+  const makeOrder = async () => {
+    if (cartData.length === 0) {
+      alert("Your cart is empty");
+      return;
+    }
+
+    const order = {
+      storeId: identifier,
+      items: cartData,
+      totalPrice,
+    };
+
+    try {
+      setLoading(true);
+      const result = await axiosInstance.post("/orders", order);
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+      alert("Error while making order");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div
       style={{
@@ -74,6 +137,7 @@ function Cart({ isOpen, setCartOpen }) {
         isOpen ? "translate-x-0" : "translate-x-full"
       }`}
     >
+      {loading && <SpinnerElement />}
       <div
         className="absolute right-0 z-50 h-screen w-96 p-4 top-0 bg-gray-200 "
         style={{ opacity: 1, zIndex: 100000000, overflow: "hidden" }}
@@ -205,8 +269,8 @@ function Cart({ isOpen, setCartOpen }) {
             </div>
             <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
               <div className="flex justify-between text-base font-medium text-gray-900">
-                <p>Subtotal</p>
-                <p>$262.00</p>
+                <p>Total</p>
+                <p>{totalPrice} DHs</p>
               </div>
               <p className="mt-0.5 text-sm text-gray-500">
                 Shipping and taxes calculated at checkout.
@@ -214,9 +278,10 @@ function Cart({ isOpen, setCartOpen }) {
               <div className="mt-6">
                 <a
                   href="#"
+                  onClick={makeOrder}
                   className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
                 >
-                  Checkout
+                  Make order
                 </a>
               </div>
             </div>

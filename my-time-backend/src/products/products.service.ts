@@ -55,8 +55,13 @@ export class ProductsService {
     return products;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  findOne(id: string) {
+    try {
+      const product = this.productModel.findById(id);
+      return product;
+    } catch (error) {
+      console.log('error', error);
+    }
   }
 
   update(id: number, updateProductDto: UpdateProductDto) {
@@ -82,7 +87,7 @@ export class ProductsService {
       .populate('category')
       .exec();
 
-    console.log(products.length);
+    // console.log(products.length);
     return products;
   }
 }
