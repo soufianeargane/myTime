@@ -14,6 +14,7 @@ import Requests from "./pages/admin/Requests";
 // owner pages
 import OwDashboard from "./pages/owner/OwDashboard";
 import OwProducts from "./pages/owner/OwProducts";
+import OwOrders from "./pages/owner/OwOrders";
 
 function App() {
   return (
@@ -67,6 +68,12 @@ function App() {
             path="/owner/products"
             element={
               <AuthorizedRoute requiredRole="owner" element={<OwProducts />} />
+            }
+          />
+          <Route
+            path="/owner/orders"
+            element={
+              <AuthorizedRoute requiredRole="owner" element={<OwOrders />} />
             }
           />
         </Routes>

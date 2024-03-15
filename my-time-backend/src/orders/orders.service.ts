@@ -36,33 +36,59 @@ export class OrdersService {
 
     await order.save();
     await this.decreaceQuantity(items);
-    console.log('order', order);
     return {
       message: 'Order created successfully',
       success: true,
     };
   }
 
-  async findAll(user: any) {
+  async findAll(user: any, page: number = 1, limit: number = 10) {
     const store = await this.storeService.getStoreByOwner(user, 'active');
-    console.log('store', store);
 
     if (!store.success) {
       throw new BadRequestException('You do not have any active store');
     }
 
+    const skip = (page - 1) * limit;
+    const totalOrders = await this.orderModel.countDocuments({
+      store: store.data._id,
+    });
+    console.log(totalOrders);
+
     const orders = await this.orderModel
       .find({ store: store.data._id })
       .populate('client')
-      .populate({
-        path: 'products._id', // Path to the nested product document
-        model: 'Product', // Model name of the product
-      })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .exec();
 
-    console.log('store', store);
+    return {
+      success: true,
+      orders,
+      totalOrders,
+    };
+  }
 
-    return orders;
+  async getOrderDetails(id: string) {
+    console.log(id);
+    try {
+      const order = await this.orderModel
+        .findOne({ _id: id })
+        .populate({
+          path: 'products._id',
+          model: 'Product',
+        })
+        .exec();
+
+      if (!order) {
+        throw new BadRequestException('Order not found');
+      }
+
+      return order;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   findOne(id: number) {

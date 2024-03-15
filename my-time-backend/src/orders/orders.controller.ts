@@ -8,6 +8,7 @@ import {
   UseGuards,
   Delete,
   ValidationPipe,
+  Query,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -29,9 +30,19 @@ export class OrdersController {
   }
 
   @Get()
-  findAll(@User() user: any) {
-    console.log(user);
-    return this.ordersService.findAll(user);
+  findAll(
+    @User() user: any,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    // console.log(user);
+    return this.ordersService.findAll(user, page, limit);
+  }
+
+  @Post('orderDetails')
+  getOrderDetails(@Body() body: any) {
+    console.log(body);
+    return this.ordersService.getOrderDetails(body.id);
   }
 
   @Get(':id')

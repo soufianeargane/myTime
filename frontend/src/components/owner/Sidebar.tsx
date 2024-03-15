@@ -19,6 +19,16 @@ const SideBar = () => {
       text: "Products",
       link: "/owner/products",
     },
+    {
+      icon: <FaWallet size={25} className="mr-4" />,
+      text: "Orders",
+      link: "/owner/orders",
+    },
+    {
+      icon: <MdHelp size={25} className="mr-4" />,
+      text: "Help",
+      link: "/owner/help",
+    },
   ];
 
   return (

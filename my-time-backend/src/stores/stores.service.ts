@@ -73,7 +73,6 @@ export class StoresService {
       .findOne({ owner: user.userId, status: status })
       .sort({ createdAt: -1 })
       .exec();
-    console.log('result', user.userId, status);
     if (result) {
       return {
         success: true,
