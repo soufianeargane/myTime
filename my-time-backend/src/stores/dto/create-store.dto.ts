@@ -11,4 +11,12 @@ export class CreateStoreDto {
   @IsNotEmpty()
   @IsString()
   phone: string;
+
+  @IsNotEmpty()
+  @IsString()
+  longitude: string;
+
+  @IsNotEmpty()
+  @IsString()
+  latitude: string;
 }

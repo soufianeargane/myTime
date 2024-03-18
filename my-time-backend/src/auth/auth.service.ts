@@ -4,7 +4,8 @@ import { Model } from 'mongoose';
 import { User } from './user.schema';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
-import { EmailService } from 'src/email/email.service';
+import { EmailService } from '../email/email.service';
+// import { EmailService } from 'src/email/email.service';
 import { CreatedUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 

@@ -10,13 +10,16 @@ import {
   Avatar,
   Button,
 } from "@nextui-org/react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import React, { useEffect } from "react";
 import Cart from "./Cart";
+import axiosInstance from "../../api/axiosInstance";
+import { setUser } from "../../store/userSlice";
 
 export default function Nav() {
   const location = useLocation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setShowCard(location.pathname.includes("store"));
@@ -29,6 +32,16 @@ export default function Nav() {
 
   const handleApplyClick = (event) => {
     event.preventDefault();
+  };
+
+  const logout = async () => {
+    try {
+      await axiosInstance.post("/auth/logout");
+      dispatch(setUser(null));
+      window.location.href = "/login";
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <Navbar
@@ -97,7 +110,7 @@ export default function Nav() {
               <p className="font-semibold">{user?.email}</p>
             </DropdownItem>
             <DropdownItem key="settings">My Settings</DropdownItem>
-            <DropdownItem key="logout" color="danger">
+            <DropdownItem onClick={logout} key="logout" color="danger">
               Log Out
             </DropdownItem>
           </DropdownMenu>

@@ -15,6 +15,7 @@ import { StoresModule } from 'src/stores/stores.module';
   ],
   controllers: [OrdersController],
   providers: [OrdersService],
+  exports: [OrdersService],
 })
 export class OrdersModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

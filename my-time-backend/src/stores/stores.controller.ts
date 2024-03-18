@@ -61,6 +61,13 @@ export class StoresController {
     }
   }
 
+  // get all for admin
+  @Get('getAllStores')
+  @UseGuards(new RoleGuard('admin'))
+  async getAllStores() {
+    return await this.storesService.getAllStores();
+  }
+
   @Get('getStoreByOwner')
   async getStoreByOwner(@User() user: any) {
     return await this.storesService.getStoreByOwner(user, 'pending');

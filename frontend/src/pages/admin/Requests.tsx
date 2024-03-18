@@ -92,7 +92,9 @@ const Requests: React.FC = () => {
   useEffect(() => {
     async function fetchStores() {
       try {
-        const res = await axiosInstance.get("/stores");
+        setIsLoading(true);
+        const res = await axiosInstance.get("/stores/getAllStores");
+        console.log(res);
         setStores(res.data);
       } catch (error) {
         console.log(error);

@@ -1,13 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { extname } from 'path';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Store } from './entities/store.entity';
-import { EmailService } from 'src/email/email.service';
-import { AuthService } from 'src/auth/auth.service';
+import { EmailService } from '../email/email.service';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class StoresService {
@@ -59,8 +59,18 @@ export class StoresService {
     return result.url;
   }
 
-  findAll() {
-    const result = this.storeModel.find().populate('owner').exec();
+  async findAll() {
+    const result = await this.storeModel
+      .find({
+        status: 'active',
+      })
+      .populate('owner')
+      .exec();
+    return result;
+  }
+
+  async getAllStores() {
+    const result = await this.storeModel.find().populate('owner').exec();
     return result;
   }
 

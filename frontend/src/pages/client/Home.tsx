@@ -23,6 +23,12 @@ export default function Home() {
     }
     fetchStores();
   }, []);
+
+  const GoogleMapsLink = (store: any) => {
+    const mapsUrl = `https://www.google.com/maps?q=${store.latitude},${store.longitude}`;
+    // redirect to google maps on a new tab
+    window.open(mapsUrl, "_blank");
+  };
   return (
     <div>
       {isLoading && <SpinnerElement />}
@@ -106,6 +112,16 @@ export default function Home() {
                       </Button>
                     </Link>
                   </div>
+                </div>
+                <div>
+                  <Button
+                    className="font-semibold px-4 py-2 space-x-2 tracking-widest"
+                    radius="full"
+                    color="default"
+                    onClick={() => GoogleMapsLink(store)}
+                  >
+                    View on Map
+                  </Button>
                 </div>
                 <div>
                   <img

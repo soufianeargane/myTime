@@ -24,6 +24,12 @@ export class Store extends Document {
   @Prop({ required: true })
   image: string;
 
+  @Prop({ required: true })
+  longitude: string;
+
+  @Prop({ required: true })
+  latitude: string;
+
   @Prop({ default: Date.now })
   createdAt: Date;
 

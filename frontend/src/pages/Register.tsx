@@ -43,10 +43,7 @@ function Register() {
 
     try {
       setIsLoaded(true);
-      //   const res = await axios.post(`${API_URL}/auth/register`, {
-      //     ...data,
-      //   });
-      const res = await axios.post("http://localhost:5000/api/auth/register", {
+      const res = await axios.post("http://localhost:3000/auth/register", {
         ...data,
       });
       notification.success({

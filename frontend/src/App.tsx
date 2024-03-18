@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import AuthorizedRoute from "./services/AuthorizedRoute";
+import Activate from "./pages/Activate";
 
 // client pages
 import Home from "./pages/client/Home";
@@ -23,6 +24,9 @@ function App() {
         <Routes>
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/verify" element={<Activate />} />
+
+          {/* client routes */}
           <Route
             path="/client/home"
             element={

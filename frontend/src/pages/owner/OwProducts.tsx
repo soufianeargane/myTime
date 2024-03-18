@@ -66,7 +66,7 @@ export default function OwProducts() {
           <div className="px-1 sm:px-2 md:px-6 h-full">
             <div className="flex items-center justify-between">
               <h2 className="text-base font-medium tracking-wide text-slate-700 line-clamp-1 dark:text-navy-100">
-                Latest Orders
+                Products
               </h2>
               <div className="flex">
                 <div className="flex items-center">

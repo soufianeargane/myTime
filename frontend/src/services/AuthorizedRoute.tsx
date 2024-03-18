@@ -6,7 +6,7 @@ import { setUser } from "../store/userSlice";
 
 const AuthorizedRoute = ({ element, requiredRole }) => {
   const navigate = useNavigate();
-  const [isAuthorized, setIsAuthorized] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(null);
   const [isLogged, setIsLogged] = useState(false);
   const user = useSelector((state) => state.user.user);
   const dispatch = useDispatch();
@@ -21,9 +21,8 @@ const AuthorizedRoute = ({ element, requiredRole }) => {
         }
       } else {
         try {
-          console.log("validating token");
-
           const result = await validateToken();
+          console.log(result);
           if (result.user) {
             dispatch(setUser(result.user));
             if (result.user.role === requiredRole) {
@@ -41,21 +40,19 @@ const AuthorizedRoute = ({ element, requiredRole }) => {
     }
 
     checkAuthorization();
-  }, [requiredRole, user, setUser, dispatch]);
+  }, [requiredRole, user, dispatch]);
 
   useEffect(() => {
     if (isLogged) {
       navigate("/login");
     }
-    //   else if (isAuthorized === false) {
-    //     navigate("/unauthorized");
-    //   }
-  }, [isAuthorized, isLogged, navigate]);
+  }, [isLogged, navigate]);
 
   if (isAuthorized === true) {
     return element;
+  } else if (isAuthorized === false) {
+    return <div>Unauthorized</div>;
   } else {
-    // Handle loading state (you can replace this with a loading spinner or message)
     return <div>Loading...</div>;
   }
 };

@@ -8,6 +8,7 @@ export default function ProductDetailsModal({ setOpen, setIsOpen, orderId }) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [backdrop, setBackdrop] = React.useState('opaque')
     const [loading, setLoading] = useState(false)
+    const [products, setProducts] = useState([])
 
     const handleOpen = (backdrop) => {
         setBackdrop(backdrop)
@@ -16,6 +17,7 @@ export default function ProductDetailsModal({ setOpen, setIsOpen, orderId }) {
 
     useEffect(() => {
         console.log('isOpen', orderId)
+        setProducts([])
         async function fetchOrderDetails() {
             console.log(orderId)
             try {
@@ -24,6 +26,7 @@ export default function ProductDetailsModal({ setOpen, setIsOpen, orderId }) {
                     id: orderId
                 })
                 console.log(response)
+                setProducts(response.data.products)
             } catch (error) {
                 console.log(error)
             } finally {
@@ -52,32 +55,43 @@ export default function ProductDetailsModal({ setOpen, setIsOpen, orderId }) {
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+                            <ModalHeader className="flex flex-col gap-1">
+                                <h2 className="text-center">Order Details</h2>
+                            </ModalHeader>
                             <ModalBody>
                                 {loading && <SpinnerElement />}
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                    Nullam pulvinar risus non risus hendrerit venenatis.
-                                    Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                                </p>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                    Nullam pulvinar risus non risus hendrerit venenatis.
-                                    Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                                </p>
-                                <p>
-                                    Magna exercitation reprehenderit magna aute tempor cupidatat consequat elit
-                                    dolor adipisicing. Mollit dolor eiusmod sunt ex incididunt cillum quis.
-                                    Velit duis sit officia eiusmod Lorem aliqua enim laboris do dolor eiusmod.
-                                    Et mollit incididunt nisi consectetur esse laborum eiusmod pariatur
-                                    proident Lorem eiusmod et. Culpa deserunt nostrud ad veniam.
-                                </p>
+                                <table className="table-auto w-full">
+                                    <thead>
+                                        <tr>
+                                            <th className="text-center">Product Image</th>
+                                            <th className="text-center">Product Name</th>
+                                            <th className="text-center">Quantity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {products.map((product, index) => (
+                                            <tr key={index}>
+                                                <td className="">
+                                                    <img src={product._id.image} alt={product._id.name} className="w-12 h-12 object-cover rounded-xl mx-auto" />
+                                                </td>
+                                                <td className="text-center">{product._id.name}</td>
+                                                <td className="text-center">{product.orderQuantity}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light"
                                     onPress={() => setIsOpen(false)}
                                 >
                                     Close
+                                </Button>
+                                {/* print button */}
+                                <Button color="success" variant="light"
+                                    onPress={() => window.print()}
+                                >
+                                    Print
                                 </Button>
                             </ModalFooter>
                         </>

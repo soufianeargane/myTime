@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 import { RoleGuard } from 'src/guard/role.guard';
 import { User } from 'src/decorators/userDecorator';
 
@@ -45,14 +44,20 @@ export class OrdersController {
     return this.ordersService.getOrderDetails(body.id);
   }
 
+  @Get('getStats')
+  getStats(@User() user: any) {
+    return this.ordersService.getStats(user);
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.ordersService.findOne(+id);
+    return this.ordersService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.ordersService.update(+id, updateOrderDto);
+  update(@Param('id') id: string, @Body() body: any) {
+    console.log(body.status);
+    console.log(id);
+    return this.ordersService.update(id, body.status);
   }
 
   @Delete(':id')

@@ -17,12 +17,13 @@ type FormData = z.infer<typeof applySchema>;
 
 export default function Apply() {
   const [loading, setLoading] = useState(false);
+  const [latitude, setLatitude] = useState(0);
+  const [longitude, setLongitude] = useState(0);
   useEffect(() => {
     const getStoreByOwner = async () => {
       setLoading(true);
       try {
         const result = await axiosInstance.get("/stores/getStoreByOwner");
-        console.log(result);
         if (result.data.success === true) {
           Swal.fire({
             title: "you can't apply for a store!",
@@ -41,9 +42,24 @@ export default function Apply() {
         setLoading(false);
       }
     };
-
     getStoreByOwner();
   }, []);
+
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLatitude(position.coords.latitude);
+          setLongitude(position.coords.longitude);
+        },
+        (error) => {
+          console.error("Error getting geolocation:", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  };
 
   const {
     register,
@@ -66,6 +82,8 @@ export default function Apply() {
     formData.append("name", data.name);
     formData.append("address", data.address);
     formData.append("phone", data.phone);
+    formData.append("latitude", latitude.toString());
+    formData.append("longitude", longitude.toString());
     formData.append("file", image);
 
     try {
@@ -149,6 +167,38 @@ export default function Apply() {
                   className="w-[300px] md:w-[500px] border-1 border-gray-300 py-2 px-4 rounded-md outline-none focus:border-yellow-500"
                   {...register("phone")}
                 />
+              </div>
+              {errors.phone && (
+                <p className="text-red-500 text-sm">{errors.phone.message}</p>
+              )}
+            </div>
+            <div>
+              <label
+                className="text-md font-bold text-gray-800 mb-4 font-serif"
+                style={{ color: "#867a6e" }}
+                htmlFor=""
+              >
+                Cordinates of the store:{" "}
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  className="w-[200px] md:w-[250px] border-1 border-gray-300 py-2 px-4 rounded-md outline-none focus:border-yellow-500"
+                  disabled
+                  value={latitude}
+                />
+                <input
+                  disabled
+                  type="number"
+                  className="w-[200px] md:w-[250px] border-1 border-gray-300 py-2 px-4 rounded-md outline-none focus:border-yellow-500"
+                  value={longitude}
+                />
+                <span
+                  onClick={getLocation}
+                  className="text-white bg-yellow-500 py-2 px-4 rounded-md cursor-pointer hover:bg-yellow-600"
+                >
+                  Get Location
+                </span>
               </div>
               {errors.phone && (
                 <p className="text-red-500 text-sm">{errors.phone.message}</p>

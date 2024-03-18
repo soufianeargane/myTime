@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product } from './entities/product.entity';
-import { StoresService } from 'src/stores/stores.service';
+import { StoresService } from '../stores/stores.service';
 
 @Injectable()
 export class ProductsService {
@@ -89,5 +89,16 @@ export class ProductsService {
 
     // console.log(products.length);
     return products;
+  }
+
+  async getTotalProducts(storeId: string) {
+    const totalProducts = await this.productModel
+      .find({
+        store: storeId,
+        deletedAt: null,
+      })
+      .countDocuments()
+      .exec();
+    return totalProducts;
   }
 }

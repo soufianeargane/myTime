@@ -10,14 +10,13 @@ export class CategoriesService {
   constructor(
     @InjectModel('Category') private readonly categoryModel: Model<Category>,
   ) {}
-
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
-  }
-
   async findAll() {
     const categories = await this.categoryModel.find();
     return categories;
+  }
+
+  create(createCategoryDto: CreateCategoryDto) {
+    return 'This action adds a new category';
   }
 
   async findOne(id: string) {

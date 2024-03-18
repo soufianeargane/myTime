@@ -3,6 +3,7 @@ import OwnerLayout from "../../components/owner/OwnerLayout";
 import SpinnerElement from "../../components/SpinnerElement";
 import axiosInstance from "../../api/axiosInstance";
 import ProductDetailsModal from "../../components/owner/ProductDetailsModal";
+import { formatDate, formatTime } from "../../helpers/formDateTime";
 
 import "../../assets/css/app.css";
 import "../../assets/css/globals.css";
@@ -10,7 +11,7 @@ import "../../assets/css/globals.css";
 const STATUS = {
   accepted: (
     <div className="badge bg-success/10 text-success dark:bg-success/15">
-      Accepted
+      accepted
     </div>
   ),
   pending: (
@@ -20,24 +21,12 @@ const STATUS = {
   ),
   canceled: (
     <div className="badge bg-error/10 text-error dark:bg-error/15">
-      Cancelled
+      cancelled
     </div>
   ),
 };
 
 const ITEMS_PER_PAGE = 10;
-
-function formatDate(dateString) {
-  const date = new Date(dateString);
-  const options = { year: "numeric", month: "short", day: "numeric" };
-  return date.toLocaleDateString("en-US", options);
-}
-
-function formatTime(dateString) {
-  const date = new Date(dateString);
-  const timeOptions = { hour: "numeric", minute: "2-digit", hour12: true };
-  return date.toLocaleTimeString("en-US", timeOptions);
-}
 
 export default function OwOrders() {
   const [orders, setOrders] = useState([]);
@@ -46,6 +35,7 @@ export default function OwOrders() {
   const [totalPages, setTotalPages] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  // const [updatedOrders, setUpdatedOrders] = useState(false);
 
   useEffect(() => {
     async function fetchOrders() {
@@ -68,6 +58,27 @@ export default function OwOrders() {
   }, [currentPage]);
 
   // const totalcount = Math.ceil(orders.length / ITEMS_PER_PAGE);
+
+  const acceptOrder = async (orderId: string, stat: string) => {
+    console.log("accepting order", orderId);
+    try {
+      setLoading(true);
+      await axiosInstance.patch(`/orders/${orderId}`, {
+        status: stat,
+      });
+      const updatedOrders = orders.map((order) => {
+        if (order._id === orderId) {
+          return { ...order, status: stat };
+        }
+        return order;
+      });
+      setOrders(updatedOrders);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -152,23 +163,54 @@ export default function OwOrders() {
                             {order.totalAmount.toFixed(2)} MAD
                           </p>
                         </td>
-                        <td className="whitespace-nowrap px-4 py-3 sm:px-5">
-                          <button className="btn h-8 w-8 rounded-full p-0 hover:bg-slate-300/20 focus:bg-slate-300/20 active:bg-slate-300/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25">
-                            <svg
-                              xmlns="../www.w3.org/2000/svg.html"
-                              className="h-5 w-5"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
-                              />
-                            </svg>
-                          </button>
+                        <td className="whitespace-nowrap px-4 py-3 flex justify-center gap-3 sm:px-5">
+                          {order.status === "pending" && (
+                            <>
+                              <button
+                                onClick={() =>
+                                  acceptOrder(order._id, "accepted")
+                                }
+                                className="btn h-8 w-8 rounded-full p-0 hover:bg-green-300 focus:bg-green-300 active:bg-slate-300/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                              >
+                                {/* accept button */}
+                                <svg
+                                  xmlns="../www.w3.org/2000/svg.html"
+                                  className="h-4 w-4"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M5 13l4 4L19 7"
+                                  />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() =>
+                                  acceptOrder(order._id, "canceled")
+                                }
+                                className="btn h-8 w-8 rounded-full p-0 hover:bg-red-300 focus:bg-red-300 active:bg-slate-300/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                              >
+                                <svg
+                                  xmlns="../www.w3.org/2000/svg.html"
+                                  className="h-4 w-4"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                  />
+                                </svg>
+                              </button>
+                            </>
+                          )}
                         </td>
                       </tr>
                     ))}
