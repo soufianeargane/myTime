@@ -42,17 +42,22 @@ export class ProductsService {
   }
 
   async findAll(user: any, { page, pageSize }): Promise<Product[]> {
-    const store = await this.storesService.getStoreByOwner(user, 'active');
-    const skip = (page - 1) * pageSize;
-    const products = await this.productModel
-      .find({
-        store: store.data._id,
-        deletedAt: null,
-      })
-      .populate('category')
-      .skip(skip)
-      .limit(pageSize);
-    return products;
+    try {
+      const store = await this.storesService.getStoreByOwner(user, 'active');
+      const skip = (page - 1) * pageSize;
+      const products = await this.productModel
+        .find({
+          store: store.data._id,
+          deletedAt: null,
+          quantity: { $gt: 0 },
+        })
+        .populate('category')
+        .skip(skip)
+        .limit(pageSize);
+      return products;
+    } catch (error) {
+      console.log('error', error);
+    }
   }
 
   findOne(id: string) {
