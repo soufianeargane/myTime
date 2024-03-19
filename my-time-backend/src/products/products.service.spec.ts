@@ -29,7 +29,12 @@ describe('ProductsService', () => {
           provide: getModelToken('Product'),
           useValue: {
             find: jest.fn().mockResolvedValue([]),
-            findById: jest.fn().mockResolvedValue({}),
+            findById: jest.fn().mockResolvedValue({
+              _id: '1',
+              name: 'Test Product',
+              deletedAt: null,
+              save: jest.fn().mockResolvedValue({}),
+            }),
             create: jest.fn().mockResolvedValue({}),
           },
         },
@@ -82,6 +87,89 @@ describe('ProductsService', () => {
 
       const result = await service.findOne('1');
       expect(result).toBeNull();
+    });
+  });
+
+  describe('remove', () => {
+    it('should delete a product successfully', async () => {
+      // Arrange
+      const mockProduct = {
+        _id: '1',
+        name: 'Test Product',
+        deletedAt: null,
+        save: jest.fn(),
+      };
+      jest.spyOn(productModel, 'findById').mockResolvedValue(mockProduct);
+
+      // Act
+      const result = await service.remove('1');
+
+      // Assert
+      expect(productModel.findById).toHaveBeenCalledWith('1');
+      expect(mockProduct.deletedAt).not.toBeNull();
+      expect(mockProduct.save).toHaveBeenCalled(); // Ensure that save method is called
+      expect(result).toEqual({
+        message: 'Product deleted successfully',
+        success: true,
+      });
+    });
+
+    it('should return product not found when product does not exist', async () => {
+      // Arrange
+      jest.spyOn(productModel, 'findById').mockResolvedValue(null);
+
+      // Act
+      const result = await service.remove('nonexistentId');
+
+      // Assert
+      expect(productModel.findById).toHaveBeenCalledWith('nonexistentId');
+      expect(result).toEqual({ message: 'Product not found', success: false });
+    });
+  });
+  describe('getTotalProducts', () => {
+    it('should return the total number of products for a given store', async () => {
+      const storeId = 'mockStoreId';
+      const totalProducts = 5;
+      jest
+        .spyOn(productModel, 'find')
+        .mockReturnThis()
+        .mockReturnValue({
+          countDocuments: jest.fn().mockReturnThis(),
+          exec: jest.fn().mockResolvedValue(totalProducts),
+        } as any);
+
+      // Act
+      const result = await service.getTotalProducts(storeId);
+
+      // Assert
+      expect(productModel.find).toHaveBeenCalledWith({
+        store: storeId,
+        deletedAt: null,
+      });
+      expect(result).toEqual(totalProducts);
+    });
+  });
+
+  describe('getProductsByStore', () => {
+    it('should return an array of products for a given store', async () => {
+      // Arrange
+      const storeId = 'mockStoreId';
+      const mockProducts = [{ name: 'Product 1' }, { name: 'Product 2' }];
+      jest.spyOn(productModel, 'find').mockReturnValueOnce({
+        populate: jest.fn().mockReturnValueOnce({
+          exec: jest.fn().mockResolvedValueOnce(mockProducts),
+        }),
+      } as any);
+
+      // Act
+      const result = await service.getProductsByStore(storeId);
+
+      // Assert
+      expect(productModel.find).toHaveBeenCalledWith({
+        store: storeId,
+        deletedAt: null,
+      });
+      expect(result).toEqual(mockProducts);
     });
   });
 });
