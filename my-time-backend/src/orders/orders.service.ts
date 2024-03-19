@@ -154,84 +154,69 @@ export class OrdersService {
 
   async getStats(user: any) {
     const store = await this.storeService.getStoreByOwner(user, 'active');
-    const acceptedOrders = await this.orderModel.countDocuments({
-      store: store.data._id,
-      status: 'accepted',
-    });
+    const storeId = store.data._id;
 
-    const totalProfit = await this.orderModel.aggregate([
-      {
-        $match: {
-          store: store.data._id,
-          status: 'accepted',
+    const [
+      acceptedOrders,
+      totalProfit,
+      totalProducts,
+      monthlyProfits,
+      bestProducts,
+    ] = await Promise.all([
+      this.orderModel.countDocuments({ store: storeId, status: 'accepted' }),
+      this.orderModel.aggregate([
+        {
+          $match: { store: storeId, status: 'accepted' },
         },
-      },
-      {
-        $group: {
-          _id: null,
-          total: {
-            $sum: '$totalAmount',
+        {
+          $group: {
+            _id: null,
+            total: { $sum: '$totalAmount' },
           },
         },
-      },
+      ]),
+      this.productsService.getTotalProducts(storeId),
+      this.orderModel.aggregate([
+        {
+          $match: {
+            store: storeId,
+            status: 'accepted',
+            createdAt: {
+              $gte: new Date(new Date().getFullYear(), 0, 1),
+              $lt: new Date(new Date().getFullYear() + 1, 0, 1),
+            },
+          },
+        },
+        {
+          $group: {
+            _id: { $month: '$createdAt' },
+            total: { $sum: '$totalAmount' },
+          },
+        },
+      ]),
+      this.best3SellingProducts(user),
     ]);
 
-    const totalProducts = await this.productsService.getTotalProducts(
-      store.data._id,
+    const totalProfitValue = totalProfit.length > 0 ? totalProfit[0].total : 0;
+
+    const currentMonth = new Date().getMonth() + 1;
+    const monthlyProfitMap = Object.fromEntries(
+      Array.from({ length: currentMonth }, (_, i) => [i + 1, 0]),
     );
-
-    const avaregeProfit = (totalProfit[0].total / acceptedOrders).toFixed(2);
-
-    const currentYear = new Date().getFullYear();
-
-    // Group orders by month and calculate total profit for each month in the current year
-    const monthlyProfits = await this.orderModel.aggregate([
-      {
-        $match: {
-          store: store.data._id,
-          status: 'accepted',
-          createdAt: {
-            $gte: new Date(`${currentYear}-01-01`),
-            $lt: new Date(`${currentYear + 1}-01-01`),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: { $month: '$createdAt' },
-          total: { $sum: '$totalAmount' },
-        },
-      },
-    ]);
-
-    const currentMonth = new Date().getMonth() + 1; // Get current month (0-indexed)
-    const monthlyProfitMap = {};
-
-    // Initialize monthlyProfitMap with default values for months up to the current month
-    for (let month = 1; month <= currentMonth; month++) {
-      monthlyProfitMap[month] = 0;
-    }
-
-    // Iterate through monthlyProfits and update monthlyProfitMap
     monthlyProfits.forEach((monthlyProfit) => {
-      const month = monthlyProfit._id;
-      monthlyProfitMap[month] = monthlyProfit.total;
+      monthlyProfitMap[monthlyProfit._id] = monthlyProfit.total;
     });
 
-    const bestProducts = await this.best3SellingProducts(user);
-
-    const obj = {
+    return {
       cardsData: {
         acceptedOrders,
-        totalProfit: totalProfit[0].total,
+        totalProfit: totalProfitValue,
         totalProducts,
-        avaregeProfit,
+        avaregeProfit: (totalProfitValue / acceptedOrders).toFixed(2) || 0,
       },
-      monthlyProfitMap: monthlyProfitMap,
+      monthlyProfitMap,
       bestProducts,
     };
-
-    return obj;
   }
 
   async best3SellingProducts(user: any) {

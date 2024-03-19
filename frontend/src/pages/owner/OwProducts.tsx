@@ -4,10 +4,10 @@ import "../../assets/css/app.css";
 import "../../assets/css/globals.css";
 import SpinnerElement from "../../components/SpinnerElement";
 import axiosInstance from "../../api/axiosInstance";
+import AddProduct from "../../components/owner/AddProduct";
 
 export default function OwProducts() {
   const [isInputActive, setIsInputActive] = useState(false);
-  const [isShowPopper, setIsShowPopper] = useState(false);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -15,6 +15,7 @@ export default function OwProducts() {
   const [totalPages, setTotalPages] = useState(0);
   const [totalEntries, setTotalEntries] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handlePageClick = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -98,6 +99,29 @@ export default function OwProducts() {
                     </svg>
                   </button>
                 </div>
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="btn h-8 w-8 rounded-full p-0 hover:bg-slate-300/20 focus:bg-slate-300/20 active:bg-slate-300/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
+                >
+                  <svg
+                    xmlns="../www.w3.org/2000/svg.html"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                  <AddProduct
+                    setOpen={isModalOpen}
+                    setIsOpen={setIsModalOpen}
+                  />
+                </button>
               </div>
             </div>
             <div className="card mt-3">
