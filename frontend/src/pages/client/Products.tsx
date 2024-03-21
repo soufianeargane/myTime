@@ -10,6 +10,7 @@ export default function Products() {
   const { id } = useParams();
 
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   useEffect(() => {
     const fetchProducts = async () => {
       setIsLoading(true);
@@ -21,8 +22,38 @@ export default function Products() {
       }
       setIsLoading(false);
     };
+
+    const fetchCategories = async () => {
+      try {
+        const response = await axiosInstance.get(`categories`);
+        setCategories(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
     fetchProducts();
+    fetchCategories();
   }, [id]);
+
+  const filterProducts = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axiosInstance.get(`products/store/filter`, {
+        params: {
+          name,
+          category,
+          id,
+        },
+      });
+      setProducts(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+    setIsLoading(false);
+  };
+
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
   return (
@@ -46,22 +77,26 @@ export default function Products() {
                 "
                 style={{ color: "#867a6e" }}
                 placeholder="Search for a store"
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
             <div>
-              <label className=" font-semibold">Distance</label>
+              <label className=" font-semibold">Categiry</label>
               <select
                 defaultValue="Select distance"
                 className="w-full border-2 border-gray-300 p-2 rounded-md outline-none focus:border-warning"
                 style={{ color: "#867a6e" }}
+                onChange={(e) => setCategory(e.target.value)}
               >
                 {/* selected disabled option */}
                 <option value="Select distance" disabled>
-                  Select distance
+                  Select category
                 </option>
-                <option>1km</option>
-                <option>2km</option>
-                <option>5km</option>
+                {categories.map((category) => (
+                  <option key={category._id} value={category._id}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
@@ -69,6 +104,7 @@ export default function Products() {
                 className="w-full font-bold font-serif"
                 radius="md"
                 color="warning"
+                onClick={filterProducts}
               >
                 Apply Filters
               </Button>

@@ -1,7 +1,21 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import ApexCharts from "apexcharts";
+interface ChartOptions {
+  chart: {
+    type: string;
+    height: number;
+  };
+  series: Array<{
+    name: string;
+    data: number[];
+  }>;
+  xaxis: {
+    categories: string[];
+  };
+}
 
-const ChartComponent = ({ chartOptions }) => {
+// Use the interface to type the props
+const ChartComponent = ({ chartOptions }: { chartOptions: ChartOptions }) => {
   const chartRef = useRef(null);
 
   useEffect(() => {

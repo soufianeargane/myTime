@@ -106,4 +106,24 @@ export class ProductsService {
       .exec();
     return totalProducts;
   }
+
+  async filterProducts({ name, category, id, user }) {
+    let filter = {};
+    if (name) {
+      filter = { ...filter, name: { $regex: name, $options: 'i' } };
+    }
+    if (category) {
+      filter = { ...filter, category };
+    }
+    if (id) {
+      filter = { ...filter, store: id };
+    } else {
+      const store = await this.storesService.getStoreByOwner(user, 'active');
+      filter = { ...filter, store: store.data._id };
+    }
+
+    console.log('filter', filter);
+    const products = await this.productModel.find(filter).populate('category');
+    return products;
+  }
 }

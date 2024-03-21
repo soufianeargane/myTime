@@ -18,19 +18,25 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import Drawer from "@mui/material/Drawer";
 
-export default function LayoutDesign({ children }) {
+// Define the type for the children prop
+interface LayoutDesignProps {
+  children: React.ReactNode;
+}
+
+export default function LayoutDesign({ children }: LayoutDesignProps) {
   React.useEffect(() => {
     document.title = "My time - Admin";
   }, []);
-  //   const [auth, setAuth] = React.useState(true);
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [open, setOpen] = React.useState(false);
 
-  const handleMenu = (event) => {
+  // Define the type for the event parameter
+  const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const toggleDrawer = (newOpen) => () => {
+  // Define the type for the newOpen parameter
+  const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
 

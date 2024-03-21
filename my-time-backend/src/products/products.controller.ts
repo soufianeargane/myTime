@@ -43,6 +43,20 @@ export class ProductsController {
     return this.productsService.findAll(user, { page, pageSize });
   }
 
+  @Get('store/filter')
+  async filterProducts(
+    @Query('name') name: string,
+    @Query('category') category: string,
+    @Query('id') id: string,
+    @User() user: any,
+  ) {
+    console.log('name', name);
+    console.log('category', category);
+    console.log('id', id);
+    console.log('user', user);
+    return this.productsService.filterProducts({ name, category, id, user });
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);

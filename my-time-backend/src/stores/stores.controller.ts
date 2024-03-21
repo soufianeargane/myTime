@@ -61,6 +61,23 @@ export class StoresController {
     }
   }
 
+  @Get('filterStores')
+  async filterStores(
+    @Query('name') name: string,
+    @Query('distance') distance: string,
+    @Query('longitude') longitude: string, // Use string type here
+    @Query('latitude') latitude: string, // Use string type here
+  ) {
+    console.log(name, distance, longitude, latitude);
+    const stores = await this.storesService.filterStores(
+      name,
+      parseInt(distance),
+      longitude,
+      latitude,
+    );
+    return stores;
+  }
+
   // get all for admin
   @Get('getAllStores')
   @UseGuards(new RoleGuard('admin'))

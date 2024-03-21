@@ -130,4 +130,55 @@ export class StoresService {
       .exec();
     return result;
   }
+
+  async filterStores(
+    name: string,
+    distance: number,
+    longitude?: string,
+    latitude?: string,
+  ) {
+    let stores = [];
+    if (name) {
+      stores = await this.storeModel
+        .find({ name: { $regex: name, $options: 'i' }, status: 'active' })
+        .exec();
+    } else {
+      stores = await this.storeModel.find().exec();
+    }
+
+    if (distance && longitude && latitude) {
+      const filteredStores = stores.filter((store) => {
+        const storeDistance = this.calculateDistance(
+          parseFloat(latitude),
+          parseFloat(longitude),
+          parseFloat(store.latitude),
+          parseFloat(store.longitude),
+        );
+        return storeDistance <= distance;
+      });
+
+      return filteredStores;
+    }
+    return stores;
+  }
+
+  deg2rad = (deg) => {
+    return deg * (Math.PI / 180);
+  };
+
+  // Function to calculate distance between two coordinates using Haversine formula
+  calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Radius of the Earth in kilometers
+    const dLat = this.deg2rad(lat2 - lat1);
+    const dLon = this.deg2rad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.deg2rad(lat1)) *
+        Math.cos(this.deg2rad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c; // Distance in kilometers
+    return d;
+  };
 }

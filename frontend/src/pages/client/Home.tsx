@@ -9,6 +9,10 @@ import { Link } from "react-router-dom";
 export default function Home() {
   const [stores, setStores] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [distance, setdistance] = useState("");
+  const [longitude, setlongitude] = useState(0);
+  const [latitude, setlatitude] = useState(0);
   useEffect(() => {
     async function fetchStores() {
       try {
@@ -28,6 +32,46 @@ export default function Home() {
     const mapsUrl = `https://www.google.com/maps?q=${store.latitude},${store.longitude}`;
     // redirect to google maps on a new tab
     window.open(mapsUrl, "_blank");
+  };
+
+  const getLocation = async () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        setlongitude(position.coords.longitude);
+        console.log(position.coords.longitude);
+        setlatitude(position.coords.latitude);
+      });
+    } else {
+      alert("Geolocation is not supported by this browser.");
+      return;
+    }
+  };
+
+  const handleFilter = async () => {
+    try {
+      if (distance) {
+        getLocation();
+      }
+      setIsLoading(true);
+      console.log("name", name);
+      console.log("distance", distance);
+      console.log("longitude", longitude);
+      console.log("latitude", latitude);
+
+      const response = await axiosInstance.get("/stores/filterStores", {
+        params: {
+          name,
+          distance,
+          longitude,
+          latitude,
+        },
+      });
+      setStores(response.data);
+    } catch (error) {
+      alert("An error occurred");
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <div>
@@ -50,6 +94,7 @@ export default function Home() {
                 "
                 style={{ color: "#867a6e" }}
                 placeholder="Search for a store"
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
             <div>
@@ -58,14 +103,15 @@ export default function Home() {
                 defaultValue="Select distance"
                 className="w-full border-2 border-gray-300 p-2 rounded-md outline-none focus:border-warning"
                 style={{ color: "#867a6e" }}
+                onChange={(e) => setdistance(e.target.value)}
               >
                 {/* selected disabled option */}
                 <option value="Select distance" disabled>
                   Select distance
                 </option>
-                <option>1km</option>
-                <option>2km</option>
-                <option>5km</option>
+                <option value="1">1km</option>
+                <option value="2">2km</option>
+                <option value="3">5km</option>
               </select>
             </div>
             <div>
@@ -73,6 +119,7 @@ export default function Home() {
                 className="w-full font-bold font-serif"
                 radius="md"
                 color="warning"
+                onClick={handleFilter}
               >
                 Apply Filters
               </Button>
