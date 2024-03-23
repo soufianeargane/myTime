@@ -21,7 +21,7 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() createdUserDto: CreatedUserDto) {
-    console.log(createdUserDto);
+    console.log('createdUserDto');
     const existUser = await this.authService.getUserByEmail(
       createdUserDto.email,
     );
