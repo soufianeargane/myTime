@@ -1,0 +1,34 @@
+stages: # List of stages for jobs, and their order of execution
+  - build
+
+build-backend-image:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - cd my-time-backend
+    # Use the commit SHA as part of the image tag
+    - docker build -t $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHA .
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    # Push the image with the commit SHA as the tag
+    - docker push $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHA
+  only:
+    changes:
+      - "my-time-backend/**/*"
+
+build-frontend-image:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - cd frontend
+    # Use the commit SHA as part of the image tag
+    - docker build -t $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHA .
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    # Push the image with the commit SHA as the tag
+    - docker push $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA
+  only:
+    changes:
+      - "frontend/**/*"
