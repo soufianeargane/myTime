@@ -13,10 +13,14 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import Drawer from "@mui/material/Drawer";
+import { Link } from "react-router-dom";
+
+import { useDispatch } from "react-redux";
+import { setUser } from "../../store/userSlice";
+import axiosInstance from "../../api/axiosInstance";
 
 // Define the type for the children prop
 interface LayoutDesignProps {
@@ -29,6 +33,8 @@ export default function LayoutDesign({ children }: LayoutDesignProps) {
   }, []);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [open, setOpen] = React.useState(false);
+
+  const dispatch = useDispatch();
 
   // Define the type for the event parameter
   const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -44,33 +50,49 @@ export default function LayoutDesign({ children }: LayoutDesignProps) {
     setAnchorEl(null);
   };
 
+  const logout = async () => {
+    try {
+      await axiosInstance.post("/auth/logout");
+      dispatch(setUser(null));
+      window.location.href = "/login";
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const DrawerList = (
     <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
       <List>
-        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-          <ListItem key={text} disablePadding>
+        <ListItem
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Link to="/admin/requests">
             <ListItemButton>
               <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                <InboxIcon />
               </ListItemIcon>
-              <ListItemText primary={text} />
+              <ListItemText primary={"Requests"} />
             </ListItemButton>
-          </ListItem>
-        ))}
+          </Link>
+          <Link
+            to="/admin/dashboard"
+            style={{
+              textDecoration: "none",
+              color: "black",
+            }}
+          >
+            <ListItemButton>
+              <ListItemIcon>
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary={"dashboard"} />
+            </ListItemButton>
+          </Link>
+        </ListItem>
       </List>
       <Divider />
-      <List>
-        {["All mail", "Trash", "Spam"].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
     </Box>
   );
 
@@ -79,8 +101,8 @@ export default function LayoutDesign({ children }: LayoutDesignProps) {
       <Drawer open={open} onClose={toggleDrawer(false)}>
         {DrawerList}
       </Drawer>
-      <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static">
+      <Box sx={{ flexGrow: 1, backgroundColor: "#0070F0" }}>
+        <AppBar position="static" sx={{ backgroundColor: "#0070F0" }}>
           <Toolbar>
             <IconButton
               onClick={toggleDrawer(true)}
@@ -93,7 +115,7 @@ export default function LayoutDesign({ children }: LayoutDesignProps) {
               <MenuIcon />
             </IconButton>
             <Typography component="div" sx={{ flexGrow: 1 }}>
-              Photos
+              Admin
             </Typography>
             <div>
               <IconButton
@@ -123,6 +145,7 @@ export default function LayoutDesign({ children }: LayoutDesignProps) {
               >
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
                 <MenuItem onClick={handleClose}>My account</MenuItem>
+                <MenuItem onClick={logout}>Logout</MenuItem>
               </Menu>
             </div>
           </Toolbar>

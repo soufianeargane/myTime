@@ -49,7 +49,6 @@ export class ProductsService {
         .find({
           store: store.data._id,
           deletedAt: null,
-          quantity: { $gt: 0 },
         })
         .populate('category')
         .skip(skip)
@@ -88,6 +87,7 @@ export class ProductsService {
       .find({
         store: storeId,
         deletedAt: null,
+        quantity: { $gt: 0 },
       })
       .populate('category')
       .exec();
@@ -121,6 +121,8 @@ export class ProductsService {
       const store = await this.storesService.getStoreByOwner(user, 'active');
       filter = { ...filter, store: store.data._id };
     }
+
+    filter = { ...filter, deletedAt: null, quantity: { $gt: 0 } };
 
     console.log('filter', filter);
     const products = await this.productModel.find(filter).populate('category');

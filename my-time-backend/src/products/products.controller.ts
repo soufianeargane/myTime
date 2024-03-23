@@ -50,10 +50,6 @@ export class ProductsController {
     @Query('id') id: string,
     @User() user: any,
   ) {
-    console.log('name', name);
-    console.log('category', category);
-    console.log('id', id);
-    console.log('user', user);
     return this.productsService.filterProducts({ name, category, id, user });
   }
 

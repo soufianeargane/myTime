@@ -8,6 +8,7 @@ import {
 
 import axiosInstance from "../../api/axiosInstance";
 import SpinnerElement from "../SpinnerElement";
+import Swal from "sweetalert2";
 
 interface CartItem {
   _id: string;
@@ -120,9 +121,18 @@ function Cart({
       const result = await axiosInstance.post("/orders", order);
       // clear localsorage and state
       localStorage.removeItem("reduxCartState");
-      // reload page
-      window.location.reload();
-      console.log(result);
+      // show sweet alert
+      Swal.fire({
+        title: "Order made successfully",
+        text: "Your order has been made successfully",
+        icon: "success",
+        confirmButtonText: "Ok",
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          window.location.reload();
+        }
+      });
     } catch (error) {
       console.log(error);
       alert("Error while making order");

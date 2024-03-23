@@ -270,4 +270,109 @@ export class OrdersService {
 
     return bestProducts;
   }
+
+  async getAdminStats() {
+    const totalOrders = await this.orderModel.countDocuments();
+    const totalStores = await this.storeService.getTotalStores();
+    const totalProfit = await this.orderModel.aggregate([
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$totalAmount' },
+        },
+      },
+    ]);
+
+    const acceptedOrdersMonthlyMap =
+      await this.monthlyOrdersByStatus('accepted');
+    const rejectedOrdersMonthlyMap =
+      await this.monthlyOrdersByStatus('rejected');
+    const pendingOrdersMonthlyMap = await this.monthlyOrdersByStatus('pending');
+
+    return {
+      cardsData: {
+        totalOrders,
+        totalStores,
+        totalProfit: totalProfit.length > 0 ? totalProfit[0].total : 0,
+      },
+      monthlyOrdersMap: {
+        accepted: acceptedOrdersMonthlyMap,
+        rejected: rejectedOrdersMonthlyMap,
+        pending: pendingOrdersMonthlyMap,
+      },
+      best3SellingStores: await this.best3sellingStores(),
+    };
+  }
+
+  async monthlyOrdersByStatus(status: string) {
+    const currentMonth = new Date().getMonth() + 1;
+    const monthlyOrders = await this.orderModel.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(new Date().getFullYear(), 0, 1),
+            $lt: new Date(new Date().getFullYear() + 1, 0, 1),
+          },
+          status: status,
+        },
+      },
+      {
+        $group: {
+          _id: { $month: '$createdAt' },
+          total: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const monthlyOrdersMap = Object.fromEntries(
+      Array.from({ length: currentMonth }, (_, i) => [i + 1, 0]),
+    );
+    monthlyOrders.forEach((monthlyOrder) => {
+      monthlyOrdersMap[monthlyOrder._id] = monthlyOrder.total;
+    });
+
+    return monthlyOrdersMap;
+  }
+
+  async best3sellingStores() {
+    // I want to get the top 3 stores with the highest total amount of orders
+    const stores = await this.orderModel.aggregate([
+      {
+        $group: {
+          _id: '$store',
+          totalAmount: { $sum: '$totalAmount' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'stores',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'store',
+        },
+      },
+      {
+        $addFields: {
+          store: { $arrayElemAt: ['$store', 0] },
+        },
+      },
+      {
+        $sort: { totalAmount: -1 },
+      },
+      {
+        $limit: 3,
+      },
+      {
+        $project: {
+          _id: 0,
+          storeId: '$store._id',
+          storeName: '$store.name',
+          storeImage: '$store.image',
+          totalAmount: 1,
+        },
+      },
+    ]);
+
+    return stores;
+  }
 }

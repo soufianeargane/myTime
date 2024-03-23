@@ -181,4 +181,13 @@ export class StoresService {
     const d = R * c; // Distance in kilometers
     return d;
   };
+
+  async getTotalStores() {
+    const result = await this.storeModel
+      .find({
+        status: 'active',
+      })
+      .exec();
+    return result.length;
+  }
 }

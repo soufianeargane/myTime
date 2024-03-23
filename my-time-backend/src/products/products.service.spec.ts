@@ -168,6 +168,7 @@ describe('ProductsService', () => {
       expect(productModel.find).toHaveBeenCalledWith({
         store: storeId,
         deletedAt: null,
+        quantity: { $gt: 0 },
       });
       expect(result).toEqual(mockProducts);
     });
