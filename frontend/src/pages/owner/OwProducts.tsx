@@ -5,6 +5,7 @@ import "../../assets/css/globals.css";
 import SpinnerElement from "../../components/SpinnerElement";
 import axiosInstance from "../../api/axiosInstance";
 import AddProduct from "../../components/owner/AddProduct";
+import UpdateProduct from "../../components/owner/UpdateProduct";
 
 export default function OwProducts() {
   const [isInputActive, setIsInputActive] = useState(false);
@@ -16,6 +17,8 @@ export default function OwProducts() {
   const [totalEntries, setTotalEntries] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [product, setProduct] = useState({});
 
   const handlePageClick = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -59,6 +62,12 @@ export default function OwProducts() {
       setIsLoading(false);
     }
   };
+
+  const openEditModal = (product) => {
+    setProduct(product);
+    setIsEditModalOpen(true);
+  };
+
   return (
     <OwnerLayout>
       <div>
@@ -119,7 +128,12 @@ export default function OwProducts() {
                   </svg>
                   <AddProduct
                     setOpen={isModalOpen}
-                    setIsOpen={setIsModalOpen}
+                    IsSetOpen={setIsModalOpen}
+                  />
+                  <UpdateProduct
+                    opening={isEditModalOpen} // Pass isEditModalOpen as opening
+                    setOpening={setIsEditModalOpen} // Pass setIsEditModalOpen as setOpening
+                    product={product}
                   />
                 </button>
               </div>
@@ -197,7 +211,7 @@ export default function OwProducts() {
                             {/* Edit button */}
                             <button
                               className="btn h-8 w-8 rounded-full p-0 hover:bg-slate-300/20 focus:bg-slate-300/20 active:bg-slate-300/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
-                              onClick={() => handleEdit(product._id)}
+                              onClick={() => openEditModal(product)}
                             >
                               <svg
                                 xmlns="../www.w3.org/2000/svg.html"

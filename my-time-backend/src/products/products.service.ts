@@ -68,8 +68,54 @@ export class ProductsService {
     }
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(
+    id: string,
+    updateProductDto: UpdateProductDto,
+    file: Express.Multer.File,
+    user: any,
+  ) {
+    try {
+      // Retrieve the product by ID
+      const product = await this.productModel.findById(id);
+
+      if (!product) {
+        return {
+          message: 'Product not found',
+          success: false,
+        };
+      }
+
+      // Check if the user is the owner of the store associated with the product
+      const store = await this.storesService.getStoreByOwner(user, 'active');
+      if (store.data._id.toString() !== product.store.toString()) {
+        return {
+          message: 'You do not have permission to update this product',
+          success: false,
+        };
+      }
+
+      // Update the product details
+      let update: UpdateProductDto & { image?: string } = {
+        ...updateProductDto,
+      };
+      if (file) {
+        const image = await this.cloudinaryService.uploadImage(file);
+        update = { ...update, image: image.url };
+      }
+
+      await this.productModel.updateOne({ _id: product._id }, { $set: update });
+
+      return {
+        message: 'Product updated successfully',
+        success: true,
+      };
+    } catch (error) {
+      console.log('error', error);
+      return {
+        message: 'An error occurred',
+        success: false,
+      };
+    }
   }
 
   async remove(id: string) {

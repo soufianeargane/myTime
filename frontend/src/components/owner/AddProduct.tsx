@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -21,11 +21,17 @@ import { notification } from "antd";
 
 type FormData = z.infer<typeof addProductSchema>;
 
-export default function AddProduct({ setOpen, setIsOpen }) {
+export default function AddProduct({ setOpen, IsSetOpen }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [loading, setLoading] = useState(false);
 
   const categories = [{ value: "65e97676d22db05f78937ebc", label: "Dog" }];
+
+  useEffect(() => {
+    if (setOpen) {
+      onOpen();
+    }
+  }, [onOpen, setOpen]);
 
   const {
     register,
@@ -79,19 +85,9 @@ export default function AddProduct({ setOpen, setIsOpen }) {
 
   return (
     <>
-      {/* <div className="flex flex-wrap gap-3">
-                <Button
-                    variant="flat"
-                    color="warning"
-                    onPress={() => handleOpen('blur')}
-                    className="capitalize"
-                >
-                    blur
-                </Button>
-            </div> */}
       <Modal
         backdrop="opaque"
-        isOpen={setOpen}
+        isOpen={isOpen} // Use isOpen to control the modal
         onClose={onClose}
         scrollBehavior="inside"
       >
@@ -197,7 +193,7 @@ export default function AddProduct({ setOpen, setIsOpen }) {
                       color="danger"
                       variant="light"
                       type="button"
-                      onPress={() => setIsOpen(false)}
+                      onPress={() => IsSetOpen(false)}
                     >
                       Close
                     </Button>

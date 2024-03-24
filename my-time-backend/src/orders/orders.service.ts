@@ -375,4 +375,14 @@ export class OrdersService {
 
     return stores;
   }
+
+  async getClientOrders(user: any) {
+    const orders = await this.orderModel
+      .find({ client: user.userId })
+      .populate('store')
+      .sort({ createdAt: -1 })
+      .exec();
+
+    return orders;
+  }
 }

@@ -55,6 +55,12 @@ export class OrdersController {
     return this.ordersService.getAdminStats();
   }
 
+  @UseGuards(new RoleGuard('client'))
+  @Get('clientOrders')
+  getClientOrders(@User() user: any) {
+    return this.ordersService.getClientOrders(user);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.ordersService.findOne(id);
